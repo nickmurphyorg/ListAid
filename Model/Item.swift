@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Item {
+struct Item: Equatable {
     var name: String
     var listed: Bool
     var completed: Bool

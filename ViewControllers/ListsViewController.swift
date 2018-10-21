@@ -13,17 +13,17 @@ class ListsViewController: UIViewController {
     @IBOutlet weak var listCollectionView: UICollectionView!
     
     var lists = [List]()
-    
+    var selectedListIndex = Int()
     var listWidth: CGFloat = 0
     var listHeight: CGFloat = 0
     
-    private let listIdentifier = "ListCell"
-    private let itemIdentifier = "ListItemCell"
+    private let listCellIdentifier = "ListCell"
+    private let itemCellIdentifier = "ListItemCellSmall"
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        lists = ModelController.shared.fetchLists()
+        lists = ModelController.shared.returnAllLists()
         
         listWidth = listCollectionView.frame.width - 60
         listHeight = listCollectionView.frame.height * 0.8
@@ -41,7 +41,7 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: listIdentifier, for: indexPath) as? ListCollectionViewCell else {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: listCellIdentifier, for: indexPath) as? ListCollectionViewCell else {
             fatalError("The dequed cell is not an instance.")
         }
         
@@ -57,6 +57,14 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
         
         cell.setTableViewDataSourceDelegate(dataSourceDelegate: self, row: indexPath.row)
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        selectedListIndex = indexPath.item
+        
+        UserPreferences.shared.saveSelectedList(index: selectedListIndex)
+        
+        performSegue(withIdentifier: "PresentListView", sender: nil)
+    }
 }
 
 extension ListsViewController: UICollectionViewDelegateFlowLayout {
@@ -71,12 +79,45 @@ extension ListsViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: itemIdentifier, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: itemCellIdentifier, for: indexPath)
         
         let item = lists[tableView.tag].items[indexPath.row]
         
         cell.textLabel?.text = item.name
         
+        if item.completed == true {
+            cell.accessoryType = .checkmark
+        } else {
+            cell.accessoryType = .none
+        }
+        
         return cell
     }
+}
+
+//MARK: - Edit List Delegate
+extension ListsViewController: EditListDelegate {
+    func editList(list: List) {
+        lists[selectedListIndex] = list
+        
+        // Update to just reload the cell...
+        listCollectionView.reloadData()
+    }
+}
+
+//MARK: - Navigation
+extension ListsViewController {
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        switch segue.identifier {
+        case "PresentListView":
+            let destinationViewController = segue.destination as! ListViewController
+                destinationViewController.selectedList = lists[selectedListIndex]
+                destinationViewController.editListDelegate = self
+            
+        default:
+            return
+        }
+    }
+    
 }

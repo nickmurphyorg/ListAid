@@ -12,13 +12,13 @@ class ModelController {
     static let shared = ModelController()
     
     private let list1 = List(name: "Grocery", items: [
-            Item(name: "Milk", listed: false, completed: false ),
-            Item(name: "Bread", listed: false, completed: false),
+            Item(name: "Milk", listed: true, completed: true ),
+            Item(name: "Bread", listed: true, completed: false),
             Item(name: "Granola", listed: false, completed: false)
         ])
     
     private let list2 = List(name: "Target", items: [
-            Item(name: "Papertowel", listed: false, completed: false),
+            Item(name: "Papertowel", listed: true, completed: true),
             Item(name: "Razor", listed: false, completed: false)
         ])
     
@@ -28,7 +28,40 @@ class ModelController {
         lists = [list1, list2]
     }
     
-    func fetchLists() -> [List] {
-        return lists
+    func returnAllLists() -> [List] {
+        var filteredLists: [List] = []
+        
+        for list in lists {
+            let filteredItems = list.items.filter { $0.listed == true }
+            
+            filteredLists.append(List(name: list.name, items: filteredItems))
+        }
+        
+        return filteredLists
+    }
+    
+    func returnList(atIndex: Int) -> List? {
+        guard lists.indices.contains(atIndex) else { return nil }
+        
+        let savedList = lists[atIndex]
+        let listedItems = savedList.items.filter { $0.listed == true }
+        
+        return List(name: savedList.name, items: listedItems)
+    }
+    
+    func returnAllItemsInList(atIndex: Int) -> [Item]? {
+        guard lists.indices.contains(atIndex) else { return nil }
+        
+        return lists[atIndex].items
+    }
+    
+    /*
+    func returnListedItemsInList(atIndex: Int) -> [Item]? {
+        guard lists.indices.contains(atIndex) else { return nil }
+    }
+    */
+    
+    func updateListItems(atIndex: Int, listItems: [Item]) {
+        lists[atIndex].items = listItems
     }
 }

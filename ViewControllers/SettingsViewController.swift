@@ -31,7 +31,9 @@ class SettingsViewController: UIViewController {
 
 extension SettingsViewController {
     func applyStyling() {
-        settingsNavigationBar.roundedCorners(corners: [.topLeft, .topRight], radius: 4)
-        settingsBackground.roundedCorners(corners: [.topLeft, .topRight], radius: 4)
+        //settingsTableView.insetsContentViewsToSafeArea = true
+        // Causing rendering issues on larger devices.
+        //settingsNavigationBar.roundedCorners(corners: [.topLeft, .topRight], radius: 4)
+        //settingsBackground.roundedCorners(corners: [.topLeft, .topRight], radius: 4)
     }
 }

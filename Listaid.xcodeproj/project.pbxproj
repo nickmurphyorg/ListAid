@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D184E06D2173BB6100F9726C /* UserPreferencesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D184E06C2173BB6000F9726C /* UserPreferencesController.swift */; };
+		D184E06F217BD33E00F9726C /* EditListDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D184E06E217BD33E00F9726C /* EditListDelegate.swift */; };
+		D184E071217BD49A00F9726C /* EditListItemsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D184E070217BD49A00F9726C /* EditListItemsDelegate.swift */; };
+		D1B9B721216AB4E20037B0D4 /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B9B720216AB4E20037B0D4 /* ListViewController.swift */; };
 		D1E7B33B2161534300C11416 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E7B33A2161534300C11416 /* AppDelegate.swift */; };
 		D1E7B33D2161534300C11416 /* ListsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E7B33C2161534300C11416 /* ListsViewController.swift */; };
 		D1E7B3402161534300C11416 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D1E7B33E2161534300C11416 /* Main.storyboard */; };
@@ -21,6 +25,8 @@
 		D1E7B3762161553200C11416 /* ModelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E7B3752161553200C11416 /* ModelController.swift */; };
 		D1E7B3792161556F00C11416 /* RoundedCorners.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E7B3782161556F00C11416 /* RoundedCorners.swift */; };
 		D1E7B37B216155CF00C11416 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E7B37A216155CF00C11416 /* SettingsViewController.swift */; };
+		D1E7B37D2165979000C11416 /* NewListCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E7B37C2165979000C11416 /* NewListCollectionViewCell.swift */; };
+		D1EBC04E2173A6170050D784 /* AddItemsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1EBC04D2173A6170050D784 /* AddItemsViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,6 +47,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D184E06C2173BB6000F9726C /* UserPreferencesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferencesController.swift; sourceTree = "<group>"; };
+		D184E06E217BD33E00F9726C /* EditListDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListDelegate.swift; sourceTree = "<group>"; };
+		D184E070217BD49A00F9726C /* EditListItemsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListItemsDelegate.swift; sourceTree = "<group>"; };
+		D1B9B720216AB4E20037B0D4 /* ListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ListViewController.swift; path = ViewControllers/ListViewController.swift; sourceTree = SOURCE_ROOT; };
 		D1E7B3372161534300C11416 /* Listaid.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Listaid.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1E7B33A2161534300C11416 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D1E7B33C2161534300C11416 /* ListsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListsViewController.swift; sourceTree = "<group>"; };
@@ -61,6 +71,8 @@
 		D1E7B3752161553200C11416 /* ModelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelController.swift; sourceTree = "<group>"; };
 		D1E7B3782161556F00C11416 /* RoundedCorners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCorners.swift; sourceTree = "<group>"; };
 		D1E7B37A216155CF00C11416 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		D1E7B37C2165979000C11416 /* NewListCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewListCollectionViewCell.swift; path = Cells/NewListCollectionViewCell.swift; sourceTree = SOURCE_ROOT; };
+		D1EBC04D2173A6170050D784 /* AddItemsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AddItemsViewController.swift; path = ViewControllers/AddItemsViewController.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +108,7 @@
 				D1E7B36B216153C100C11416 /* ViewControllers */,
 				D1E7B373216154C700C11416 /* Cells */,
 				D1E7B3742161551700C11416 /* OtherControllers */,
+				D1EBC0512173A9D70050D784 /* Protocols */,
 				D1E7B3772161555600C11416 /* Extensions */,
 				D1E7B3512161534600C11416 /* ListaidTests */,
 				D1E7B35C2161534600C11416 /* ListaidUITests */,
@@ -148,6 +161,8 @@
 			isa = PBXGroup;
 			children = (
 				D1E7B33C2161534300C11416 /* ListsViewController.swift */,
+				D1B9B720216AB4E20037B0D4 /* ListViewController.swift */,
+				D1EBC04D2173A6170050D784 /* AddItemsViewController.swift */,
 				D1E7B37A216155CF00C11416 /* SettingsViewController.swift */,
 			);
 			path = ViewControllers;
@@ -166,6 +181,7 @@
 			isa = PBXGroup;
 			children = (
 				D1E7B371216154BC00C11416 /* ListCollectionViewCell.swift */,
+				D1E7B37C2165979000C11416 /* NewListCollectionViewCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -174,6 +190,7 @@
 			isa = PBXGroup;
 			children = (
 				D1E7B3752161553200C11416 /* ModelController.swift */,
+				D184E06C2173BB6000F9726C /* UserPreferencesController.swift */,
 			);
 			path = OtherControllers;
 			sourceTree = "<group>";
@@ -184,6 +201,15 @@
 				D1E7B3782161556F00C11416 /* RoundedCorners.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		D1EBC0512173A9D70050D784 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				D184E06E217BD33E00F9726C /* EditListDelegate.swift */,
+				D184E070217BD49A00F9726C /* EditListItemsDelegate.swift */,
+			);
+			path = Protocols;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -318,13 +344,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				D1E7B372216154BC00C11416 /* ListCollectionViewCell.swift in Sources */,
+				D184E06D2173BB6100F9726C /* UserPreferencesController.swift in Sources */,
+				D1EBC04E2173A6170050D784 /* AddItemsViewController.swift in Sources */,
 				D1E7B36F2161546A00C11416 /* Item.swift in Sources */,
 				D1E7B33D2161534300C11416 /* ListsViewController.swift in Sources */,
+				D1E7B37D2165979000C11416 /* NewListCollectionViewCell.swift in Sources */,
 				D1E7B36D2161544500C11416 /* List.swift in Sources */,
+				D184E071217BD49A00F9726C /* EditListItemsDelegate.swift in Sources */,
+				D1B9B721216AB4E20037B0D4 /* ListViewController.swift in Sources */,
 				D1E7B3792161556F00C11416 /* RoundedCorners.swift in Sources */,
 				D1E7B33B2161534300C11416 /* AppDelegate.swift in Sources */,
 				D1E7B3762161553200C11416 /* ModelController.swift in Sources */,
 				D1E7B3432161534300C11416 /* Listaid.xcdatamodeld in Sources */,
+				D184E06F217BD33E00F9726C /* EditListDelegate.swift in Sources */,
 				D1E7B37B216155CF00C11416 /* SettingsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
