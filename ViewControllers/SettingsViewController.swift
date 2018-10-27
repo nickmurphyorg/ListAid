@@ -16,7 +16,6 @@ class SettingsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        applyStyling()
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle{
@@ -27,13 +26,4 @@ class SettingsViewController: UIViewController {
         dismiss(animated: true, completion: nil)
     }
     
-}
-
-extension SettingsViewController {
-    func applyStyling() {
-        //settingsTableView.insetsContentViewsToSafeArea = true
-        // Causing rendering issues on larger devices.
-        //settingsNavigationBar.roundedCorners(corners: [.topLeft, .topRight], radius: 4)
-        //settingsBackground.roundedCorners(corners: [.topLeft, .topRight], radius: 4)
-    }
 }

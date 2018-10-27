@@ -39,7 +39,10 @@
                                                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="24"/>
-                                                    <textInputTraits key="textInputTraits"/>
+                                                    <textInputTraits key="textInputTraits" enablesReturnKeyAutomatically="YES"/>
+                                                    <connections>
+                                                        <action selector="returnNameField:" destination="qYR-BB-akl" eventType="primaryActionTriggered" id="J0k-c4-Bew"/>
+                                                    </connections>
                                                 </textField>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MLu-eW-em9">
                                                     <rect key="frame" x="246" y="9" width="30" height="30"/>
@@ -84,6 +87,38 @@
                                             <outlet property="deleteListButton" destination="MLu-eW-em9" id="Rnq-G4-4Pv"/>
                                             <outlet property="listNameField" destination="ghH-tG-ovG" id="Vak-si-ot0"/>
                                             <outlet property="listTableView" destination="4mi-9c-TFU" id="092-Gi-Xkp"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="NewListCell" id="cK3-2z-1c0" customClass="NewListCollectionViewCell" customModule="Listaid" customModuleProvider="target">
+                                        <rect key="frame" x="324" y="78.5" width="284" height="490"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
+                                            <rect key="frame" x="0.0" y="0.0" width="284" height="490"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="New List" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mRg-Tc-7AV">
+                                                    <rect key="frame" x="8" y="10" width="268" height="29"/>
+                                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="24"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rCh-1D-K9E">
+                                                    <rect key="frame" x="0.0" y="49" width="284" height="441"/>
+                                                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </view>
+                                            </subviews>
+                                        </view>
+                                        <constraints>
+                                            <constraint firstAttribute="trailing" secondItem="rCh-1D-K9E" secondAttribute="trailing" id="2p5-F5-nYL"/>
+                                            <constraint firstAttribute="trailing" secondItem="mRg-Tc-7AV" secondAttribute="trailing" constant="8" id="4jq-s2-kvv"/>
+                                            <constraint firstItem="mRg-Tc-7AV" firstAttribute="leading" secondItem="cK3-2z-1c0" secondAttribute="leading" constant="8" id="KxD-W2-0bZ"/>
+                                            <constraint firstItem="rCh-1D-K9E" firstAttribute="top" secondItem="mRg-Tc-7AV" secondAttribute="bottom" constant="10" id="bP2-35-IMy"/>
+                                            <constraint firstItem="mRg-Tc-7AV" firstAttribute="top" secondItem="cK3-2z-1c0" secondAttribute="top" constant="10" id="lMO-Rk-uTS"/>
+                                            <constraint firstAttribute="bottom" secondItem="rCh-1D-K9E" secondAttribute="bottom" id="rZl-Fr-h4T"/>
+                                            <constraint firstItem="rCh-1D-K9E" firstAttribute="leading" secondItem="cK3-2z-1c0" secondAttribute="leading" id="yHk-3j-U1u"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="listView" destination="rCh-1D-K9E" id="Zhx-bu-XtB"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
@@ -178,8 +213,11 @@
                                     <segue destination="dlF-Ew-wMl" kind="presentation" identifier="PresentAddItems" id="3fR-w0-noA"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bcr-5G-8TV">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="clip" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bcr-5G-8TV">
                                 <rect key="frame" x="10" y="30" width="315" height="36"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="36" id="ZND-hx-SHn"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="30"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>

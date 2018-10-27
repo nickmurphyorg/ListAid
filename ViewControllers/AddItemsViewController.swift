@@ -21,7 +21,7 @@ class AddItemsViewController: UIViewController {
     var selectedListItems = [Item]()
     var searchResultItems = [Item]()
     
-    let cellIdentifier = "ItemCell"
+    private let cellIdentifier = "ItemCell"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -78,7 +78,7 @@ extension AddItemsViewController: UISearchBarDelegate {
     
 }
 
-//MARK - Tableview Delegate and Datasource
+//MARK: - Tableview Delegate and Datasource
 extension AddItemsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if activeSearch() {
@@ -133,8 +133,6 @@ extension AddItemsViewController {
     }
     
     func checkItemInMasterList(updateItem: Item) {
-        print("Looking for: \(updateItem)")
-        
         for (index, item) in selectedListItems.enumerated() {
             if item == updateItem {
                 selectedListItems[index].listed.toggle()

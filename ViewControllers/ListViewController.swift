@@ -17,7 +17,7 @@ class ListViewController: UIViewController {
     var selectedList: List?
     var selectedListItems = [Item]()
     
-    let cellIdentifier = "ItemCell"
+    private let cellIdentifier = "ItemCell"
     
     
     override func viewDidLoad() {

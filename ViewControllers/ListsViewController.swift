@@ -18,6 +18,7 @@ class ListsViewController: UIViewController {
     var listHeight: CGFloat = 0
     
     private let listCellIdentifier = "ListCell"
+    private let newListCellIdentifier = "NewListCell"
     private let itemCellIdentifier = "ListItemCellSmall"
     
     override func viewDidLoad() {
@@ -35,19 +36,34 @@ class ListsViewController: UIViewController {
 
 }
 
+//MARK: - Collection View Delegate and Data Source
 extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 2
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return lists.count
+        return section == 0 ? lists.count : 1 ;
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard indexPath.section == 0 else {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: newListCellIdentifier, for: indexPath) as? NewListCollectionViewCell else {
+                fatalError("The new list cell could not be created.")
+            }
+            
+            return cell
+        }
+        
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: listCellIdentifier, for: indexPath) as? ListCollectionViewCell else {
             fatalError("The dequed cell is not an instance.")
         }
         
-        let list = lists[indexPath.row]
+        let list = lists[indexPath.item]
         
         cell.listNameField.text = list.name
+        cell.setNameFieldDelegate(textFieldDelegate: self, cell: indexPath.item)
+        cell.setTableViewDataSourceDelegate(dataSourceDelegate: self, cell: indexPath.item)
         
         return cell
     }
@@ -55,10 +71,16 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? ListCollectionViewCell else { return }
         
-        cell.setTableViewDataSourceDelegate(dataSourceDelegate: self, row: indexPath.row)
+        cell.reloadTable()
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard indexPath.section == 0 else {
+            addNewList()
+            
+            return
+        }
+        
         selectedListIndex = indexPath.item
         
         UserPreferences.shared.saveSelectedList(index: selectedListIndex)
@@ -67,12 +89,29 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
     }
 }
 
+//MARK: - Collection View Layout
 extension ListsViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: listWidth, height: listHeight)
     }
 }
 
+//MARK: - Cell Text Field Delegate
+extension ListsViewController: UITextFieldDelegate {
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        guard textField.hasText else {
+            textField.text = lists[textField.tag].name
+            return
+        }
+        
+        lists[textField.tag].name = textField.text!
+        
+        ModelController.shared.updateListName(listIndex: textField.tag, newName: textField.text!)
+    }
+    
+}
+
+//MARK: - Cell Table View Delegate and Datasource
 extension ListsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return lists[tableView.tag].items.count
@@ -100,8 +139,23 @@ extension ListsViewController: EditListDelegate {
     func editList(list: List) {
         lists[selectedListIndex] = list
         
-        // Update to just reload the cell...
-        listCollectionView.reloadData()
+        listCollectionView.reloadItems(at: [IndexPath(item: lists.count - 1, section: 0)])
+    }
+}
+
+//MARK: - Methods
+extension ListsViewController {
+    func addNewList() {
+        let newList = List(name: "", items: [])
+        
+        lists = ModelController.shared.addNewList(newList: newList)
+        
+        let newIndex = IndexPath(item: lists.count - 1, section: 0)
+        
+        listCollectionView.insertItems(at: [newIndex])
+        
+        let addedList = listCollectionView.cellForItem(at: newIndex) as! ListCollectionViewCell
+            addedList.listNameField.becomeFirstResponder()
     }
 }
 

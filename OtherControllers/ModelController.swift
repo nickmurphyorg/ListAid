@@ -40,7 +40,7 @@ class ModelController {
         return filteredLists
     }
     
-    func returnList(atIndex: Int) -> List? {
+    func returnFilteredList(atIndex: Int) -> List? {
         guard lists.indices.contains(atIndex) else { return nil }
         
         let savedList = lists[atIndex]
@@ -62,6 +62,21 @@ class ModelController {
     */
     
     func updateListItems(atIndex: Int, listItems: [Item]) {
+        guard lists.indices.contains(atIndex) else { return }
+        
         lists[atIndex].items = listItems
+    }
+    
+    func updateListName(listIndex: Int, newName: String) {
+        // Add error alert if name cannot be updated.
+        guard lists.indices.contains(listIndex) else { return }
+        
+        lists[listIndex].name = newName
+    }
+    
+    func addNewList(newList: List) -> [List] {
+        lists.append(newList)
+        
+        return returnAllLists()
     }
 }
