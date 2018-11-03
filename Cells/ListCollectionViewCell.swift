@@ -14,6 +14,9 @@ class ListCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var deleteListButton: UIButton!
     @IBOutlet private weak var listTableView: UITableView!
     
+    var deleteList: DeleteListDelegate?
+    var cellIndex = Int()
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -24,25 +27,35 @@ class ListCollectionViewCell: UICollectionViewCell {
     @IBAction func returnNameField(_ sender: UITextField) {
         listNameField.resignFirstResponder()
     }
+    
+    @IBAction func deleteListButton(_ sender: UIButton) {
+        deleteList?.deleteList(index: deleteListButton.tag)
+    }
 }
 
 //MARK: - List Name Field Delegate
 extension ListCollectionViewCell {
-    
-    func setNameFieldDelegate <T: UITextFieldDelegate> (textFieldDelegate: T, cell: Int) {
+    func setNameFieldDelegate <T: UITextFieldDelegate> (textFieldDelegate: T) {
         listNameField.delegate = textFieldDelegate
-        listNameField.tag = cell
+        listNameField.tag = cellIndex
     }
     
 }
 
+//MARK: - Delete List Delegate
+extension ListCollectionViewCell {
+    func setDeleteListDelegate <L: DeleteListDelegate> (deleteListDelegate: L) {
+        deleteList = deleteListDelegate
+        deleteListButton.tag = cellIndex
+    }
+}
+
 //MARK: - Tableview DataSource and Delegate
 extension ListCollectionViewCell {
-    
-    func setTableViewDataSourceDelegate <D: UITableViewDataSource & UITableViewDelegate> (dataSourceDelegate: D, cell: Int) {
+    func setTableViewDataSourceDelegate <D: UITableViewDataSource & UITableViewDelegate> (dataSourceDelegate: D) {
         listTableView.dataSource = dataSourceDelegate
         listTableView.delegate = dataSourceDelegate
-        listTableView.tag = cell
+        listTableView.tag = cellIndex
     }
     
     func reloadTable(){

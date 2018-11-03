@@ -61,9 +61,11 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
         
         let list = lists[indexPath.item]
         
+        cell.cellIndex = indexPath.item
         cell.listNameField.text = list.name
-        cell.setNameFieldDelegate(textFieldDelegate: self, cell: indexPath.item)
-        cell.setTableViewDataSourceDelegate(dataSourceDelegate: self, cell: indexPath.item)
+        cell.setNameFieldDelegate(textFieldDelegate: self)
+        cell.setDeleteListDelegate(deleteListDelegate: self)
+        cell.setTableViewDataSourceDelegate(dataSourceDelegate: self)
         
         return cell
     }
@@ -71,6 +73,7 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? ListCollectionViewCell else { return }
         
+        cell.cellIndex = indexPath.item
         cell.reloadTable()
     }
     
@@ -109,6 +112,17 @@ extension ListsViewController: UITextFieldDelegate {
         ModelController.shared.updateListName(listIndex: textField.tag, newName: textField.text!)
     }
     
+}
+
+//MARK: - Delete List Delegate
+extension ListsViewController: DeleteListDelegate {
+    func deleteList(index: Int) {
+        lists = ModelController.shared.deleteList(listIndex: index)
+        
+        let itemIndex = IndexPath(item: index, section: 0)
+        
+        listCollectionView.deleteItems(at: [itemIndex])
+    }
 }
 
 //MARK: - Cell Table View Delegate and Datasource

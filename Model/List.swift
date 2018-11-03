@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct List {
+struct List: Equatable {
     var name: String
     var items: [Item]
 }

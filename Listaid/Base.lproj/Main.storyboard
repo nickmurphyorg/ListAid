@@ -55,6 +55,9 @@
                                                     <state key="normal" title="-">
                                                         <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </state>
+                                                    <connections>
+                                                        <action selector="deleteListButton:" destination="qYR-BB-akl" eventType="touchUpInside" id="lWI-8s-46V"/>
+                                                    </connections>
                                                 </button>
                                                 <tableView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="4mi-9c-TFU">
                                                     <rect key="frame" x="0.0" y="49" width="284" height="441"/>

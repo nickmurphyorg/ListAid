@@ -79,4 +79,12 @@ class ModelController {
         
         return returnAllLists()
     }
+    
+    func deleteList(listIndex: Int) -> [List] {
+        guard lists.indices.contains(listIndex) else { return lists }
+        
+        lists.remove(at: listIndex)
+        
+        return returnAllLists()
+    }
 }

@@ -64,7 +64,7 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-//MARK: - Edit List Items Delegate
+//MARK: - Edit List Delegate
 extension ListViewController: EditListItemsDelegate {
     func editItems(items: [Item]) {
         selectedListItems = items
