@@ -14,6 +14,7 @@ class ListViewController: UIViewController {
     @IBOutlet weak var itemsTableView: UITableView!
     
     var editListDelegate: EditListDelegate?
+    var zoomInteractionController: ZoomInteractionController?
     var selectedList: List?
     var selectedListItems = [Item]()
     
@@ -27,12 +28,14 @@ class ListViewController: UIViewController {
             listNameLabel.text = selectedList.name
             selectedListItems = selectedList.items
         }
+        
+        zoomInteractionController = ZoomInteractionController(viewController: self)
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle{
         return .lightContent
     }
-
+    
 }
 
 //MARK: - Tableview Datasource and Delegate

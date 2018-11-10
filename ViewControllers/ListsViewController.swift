@@ -10,6 +10,8 @@ import UIKit
 
 class ListsViewController: UIViewController {
     
+    @IBOutlet var mainView: UIView!
+    @IBOutlet weak var listsView: UIView!
     @IBOutlet weak var listCollectionView: UICollectionView!
     
     var lists = [List]()
@@ -17,17 +19,19 @@ class ListsViewController: UIViewController {
     var listWidth: CGFloat = 0
     var listHeight: CGFloat = 0
     
+    private let listSegueIdentigier = "PresentListView"
     private let listCellIdentifier = "ListCell"
     private let newListCellIdentifier = "NewListCell"
     private let itemCellIdentifier = "ListItemCellSmall"
+    private let statusBarHeight = UIApplication.shared.statusBarFrame.height
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         lists = ModelController.shared.returnAllLists()
         
-        listWidth = listCollectionView.frame.width - 60
-        listHeight = listCollectionView.frame.height * 0.8
+        listWidth = mainView.frame.width * 0.8
+        listHeight = (mainView.frame.height * 0.8) - statusBarHeight
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle{
@@ -88,7 +92,7 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
         
         UserPreferences.shared.saveSelectedList(index: selectedListIndex)
         
-        performSegue(withIdentifier: "PresentListView", sender: nil)
+        performSegue(withIdentifier: listSegueIdentigier, sender: nil)
     }
 }
 
@@ -178,14 +182,56 @@ extension ListsViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
-        case "PresentListView":
+        case listSegueIdentigier:
             let destinationViewController = segue.destination as! ListViewController
                 destinationViewController.selectedList = lists[selectedListIndex]
                 destinationViewController.editListDelegate = self
+                destinationViewController.transitioningDelegate = self
             
         default:
             return
         }
     }
     
+}
+
+//MARK: - Navigation Transition Delegate
+extension ListsViewController: UIViewControllerTransitioningDelegate {
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        let selectedListIndexPath = IndexPath(item: selectedListIndex, section: 0)
+        let selectedCellAttributes = listCollectionView.layoutAttributesForItem(at: selectedListIndexPath)
+        
+        guard let cellFrame = selectedCellAttributes?.frame else { return nil }
+        
+        let selectedCellFrame = listCollectionView.convert(cellFrame, to: listCollectionView.superview)
+        
+        return ListZoomInAnimationController(listCellFrame: selectedCellFrame)
+    }
+    
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        guard let originVC = dismissed as? ListViewController else {
+            return nil
+        }
+        
+        let selectedListIndexPath = IndexPath(item: selectedListIndex, section: 0)
+        let selectedCellAttributes = listCollectionView.layoutAttributesForItem(at: selectedListIndexPath)
+        
+        guard let cellFrame = selectedCellAttributes?.frame else {
+            return nil
+        }
+        
+        let selectedCellFrame = listCollectionView.convert(cellFrame, to: listCollectionView.superview)
+        
+        return ListZoomOutAnimationController(listCellFrame: selectedCellFrame, intereactionController: originVC.zoomInteractionController)
+    }
+    
+    func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        guard let animator = animator as? ListZoomOutAnimationController,
+            let interactionController = animator.zoomInteractionController,
+            interactionController.interactionInProgress
+            else {
+                return nil
+        }
+        return interactionController
+    }
 }
