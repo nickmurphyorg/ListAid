@@ -13,17 +13,21 @@ class ListsViewController: UIViewController {
     @IBOutlet var mainView: UIView!
     @IBOutlet weak var listsView: UIView!
     @IBOutlet weak var listCollectionView: UICollectionView!
+    @IBOutlet weak var editButton: UIBarButtonItem!
     
     var lists = [List]()
     var selectedListIndex = Int()
     var listWidth: CGFloat = 0
     var listHeight: CGFloat = 0
+    var editListsMode = false
+    var addListMode = false
     
     private let listSegueIdentigier = "PresentListView"
     private let listCellIdentifier = "ListCell"
     private let newListCellIdentifier = "NewListCell"
     private let itemCellIdentifier = "ListItemCellSmall"
     private let statusBarHeight = UIApplication.shared.statusBarFrame.height
+    let accentColor = UIColor(red: 0.0, green: 0.478, blue: 1.0, alpha: 1.0)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,12 +64,12 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
         }
         
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: listCellIdentifier, for: indexPath) as? ListCollectionViewCell else {
-            fatalError("The dequed cell is not an instance.")
+            fatalError("The list cell could not be created.")
         }
         
         let list = lists[indexPath.item]
         
-        cell.cellIndex = indexPath.item
+        cell.setIndex(index: indexPath.item)
         cell.listNameField.text = list.name
         cell.setNameFieldDelegate(textFieldDelegate: self)
         cell.setDeleteListDelegate(deleteListDelegate: self)
@@ -77,11 +81,27 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? ListCollectionViewCell else { return }
         
-        cell.cellIndex = indexPath.item
+        cell.setIndex(index: indexPath.item)
+        
+        if editListsMode {
+            cell.listNameField.layer.shadowOpacity = 1.0
+            cell.deleteListButton.isHidden = false
+        } else if addListMode && indexPath.item + 1 == lists.count {
+            cell.listNameField.layer.shadowOpacity = 1.0
+            cell.deleteListButton.isHidden = false
+        } else {
+            cell.listNameField.layer.shadowOpacity = 0.0
+            cell.deleteListButton.isHidden = true
+        }
+        
         cell.reloadTable()
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        // Disable while adding a new list
+        guard !addListMode else { return }
+        
+        // Check if it's new list card
         guard indexPath.section == 0 else {
             addNewList()
             
@@ -103,15 +123,66 @@ extension ListsViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
+//MARK: - Toggle Cell Edit Mode
+extension ListsViewController {
+    @IBAction func editListsButton(_ sender: Any) {
+        if editListsMode {
+            editListsMode = false
+            editButton.title = "Edit"
+            editButton.style = .plain
+            editButton.tintColor = UIColor.white
+        } else {
+            editListsMode = true
+            editButton.title = "Done"
+            editButton.style = .done
+            editButton.tintColor = accentColor
+        }
+        
+        let visibleCellIndexPaths = listCollectionView.indexPathsForVisibleItems
+        
+        for indexPath in visibleCellIndexPaths {
+            guard let cell = listCollectionView.cellForItem(at: indexPath) as? ListCollectionViewCell else {
+                return
+            }
+            
+            if editListsMode {
+                cell.listNameField.layer.shadowOpacity = 1.0
+                cell.deleteListButton.isHidden = false
+            } else if addListMode && indexPath.item + 1 == lists.count {
+                cell.listNameField.layer.shadowOpacity = 1.0
+                cell.deleteListButton.isHidden = false
+            } else {
+                cell.listNameField.layer.shadowOpacity = 0.0
+                cell.deleteListButton.isHidden = true
+            }
+        }
+    }
+}
+
 //MARK: - Cell Text Field Delegate
 extension ListsViewController: UITextFieldDelegate {
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        return editListsMode || addListMode ? true : false ;
+    }
+    
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard textField.hasText else {
-            textField.text = lists[textField.tag].name
+            let savedName = ModelController.shared.returnSavedListName(listIndex: textField.tag)
+            
+            if let savedName = savedName {
+                textField.text = savedName
+            }
+            
             return
         }
         
+        guard lists.indices.contains(textField.tag) else { return }
+        
+        addListMode = false
+        
         lists[textField.tag].name = textField.text!
+        
+        listCollectionView.reloadItems(at: [IndexPath(item: lists.count - 1, section: 0)])
         
         ModelController.shared.updateListName(listIndex: textField.tag, newName: textField.text!)
     }
@@ -121,11 +192,17 @@ extension ListsViewController: UITextFieldDelegate {
 //MARK: - Delete List Delegate
 extension ListsViewController: DeleteListDelegate {
     func deleteList(index: Int) {
-        lists = ModelController.shared.deleteList(listIndex: index)
+        let deleteAlert = Alert.newAlert(title: "Are you sure?", message: "You will not be able to recover the list.", hasCancel: true, buttonLabel: "Delete", buttonStyle: .destructive, completion: { [weak self] action in
+            self?.addListMode = false
+            
+            self?.lists = ModelController.shared.deleteList(listIndex: index)
+            
+            let itemIndex = IndexPath(item: index, section: 0)
+            
+            self?.listCollectionView.deleteItems(at: [itemIndex])
+        })
         
-        let itemIndex = IndexPath(item: index, section: 0)
-        
-        listCollectionView.deleteItems(at: [itemIndex])
+        present(deleteAlert, animated: true, completion: nil)
     }
 }
 
@@ -161,9 +238,11 @@ extension ListsViewController: EditListDelegate {
     }
 }
 
-//MARK: - Methods
+//MARK: - Helper Methods
 extension ListsViewController {
     func addNewList() {
+        addListMode = true
+        
         let newList = List(name: "", items: [])
         
         lists = ModelController.shared.addNewList(newList: newList)
@@ -173,7 +252,9 @@ extension ListsViewController {
         listCollectionView.insertItems(at: [newIndex])
         
         let addedList = listCollectionView.cellForItem(at: newIndex) as! ListCollectionViewCell
-            addedList.listNameField.becomeFirstResponder()
+        addedList.listNameField.becomeFirstResponder()
+        addedList.listNameField.layer.shadowOpacity = 1.0
+        addedList.deleteListButton.isHidden = false
     }
 }
 

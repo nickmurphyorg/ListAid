@@ -68,10 +68,15 @@ class ModelController {
     }
     
     func updateListName(listIndex: Int, newName: String) {
-        // Add error alert if name cannot be updated.
         guard lists.indices.contains(listIndex) else { return }
         
         lists[listIndex].name = newName
+    }
+    
+    func returnSavedListName(listIndex: Int) -> String? {
+        guard lists.indices.contains(listIndex) else { return nil }
+        
+        return lists[listIndex].name
     }
     
     func addNewList(newList: List) -> [List] {

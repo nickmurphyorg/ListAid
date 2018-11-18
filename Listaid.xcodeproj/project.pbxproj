@@ -10,6 +10,7 @@
 		D11B7F88218E1B5D009F1A77 /* ListZoomInAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11B7F87218E1B5D009F1A77 /* ListZoomInAnimationController.swift */; };
 		D11B7F8A218FABB2009F1A77 /* ListZoomOutAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11B7F89218FABB2009F1A77 /* ListZoomOutAnimationController.swift */; };
 		D11B7F8C21976B42009F1A77 /* ZoomInteractionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11B7F8B21976B41009F1A77 /* ZoomInteractionController.swift */; };
+		D140862521A0FF4800363E01 /* AlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D140862421A0FF4800363E01 /* AlertController.swift */; };
 		D184E06D2173BB6100F9726C /* UserPreferencesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D184E06C2173BB6000F9726C /* UserPreferencesController.swift */; };
 		D184E06F217BD33E00F9726C /* EditListDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D184E06E217BD33E00F9726C /* EditListDelegate.swift */; };
 		D184E071217BD49A00F9726C /* EditListItemsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D184E070217BD49A00F9726C /* EditListItemsDelegate.swift */; };
@@ -54,6 +55,7 @@
 		D11B7F87218E1B5D009F1A77 /* ListZoomInAnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListZoomInAnimationController.swift; sourceTree = "<group>"; };
 		D11B7F89218FABB2009F1A77 /* ListZoomOutAnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ListZoomOutAnimationController.swift; path = AnimationControllers/ListZoomOutAnimationController.swift; sourceTree = SOURCE_ROOT; };
 		D11B7F8B21976B41009F1A77 /* ZoomInteractionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ZoomInteractionController.swift; path = ViewControllers/InteractionControllers/ZoomInteractionController.swift; sourceTree = SOURCE_ROOT; };
+		D140862421A0FF4800363E01 /* AlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertController.swift; sourceTree = "<group>"; };
 		D184E06C2173BB6000F9726C /* UserPreferencesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferencesController.swift; sourceTree = "<group>"; };
 		D184E06E217BD33E00F9726C /* EditListDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListDelegate.swift; sourceTree = "<group>"; };
 		D184E070217BD49A00F9726C /* EditListItemsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListItemsDelegate.swift; sourceTree = "<group>"; };
@@ -219,6 +221,7 @@
 			children = (
 				D1E7B3752161553200C11416 /* ModelController.swift */,
 				D184E06C2173BB6000F9726C /* UserPreferencesController.swift */,
+				D140862421A0FF4800363E01 /* AlertController.swift */,
 			);
 			path = OtherControllers;
 			sourceTree = "<group>";
@@ -388,6 +391,7 @@
 				D11B7F8A218FABB2009F1A77 /* ListZoomOutAnimationController.swift in Sources */,
 				D1E7B3432161534300C11416 /* Listaid.xcdatamodeld in Sources */,
 				D1A8E015218508D600F8E36C /* DeleteListDelegate.swift in Sources */,
+				D140862521A0FF4800363E01 /* AlertController.swift in Sources */,
 				D184E06F217BD33E00F9726C /* EditListDelegate.swift in Sources */,
 				D11B7F88218E1B5D009F1A77 /* ListZoomInAnimationController.swift in Sources */,
 				D1E7B37B216155CF00C11416 /* SettingsViewController.swift in Sources */,
