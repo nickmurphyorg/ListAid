@@ -16,20 +16,32 @@ class ListViewController: UIViewController {
     var editListDelegate: EditListDelegate?
     var zoomInteractionController: ZoomInteractionController?
     var selectedList: List?
+    var selectedListName: String!
     var selectedListItems = [Item]()
     
     private let cellIdentifier = "ItemCell"
-    
+    private let addItemsSegue = "PresentAddItems"
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         if let selectedList = selectedList {
             listNameLabel.text = selectedList.name
+            selectedListName = selectedList.name
             selectedListItems = selectedList.items
         }
         
         zoomInteractionController = ZoomInteractionController(viewController: self)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        guard zoomInteractionController?.interactionInProgress ?? false else {
+            return
+        }
+        
+        let listData = List(name: selectedListName, items: selectedListItems)
+        
+        editListDelegate?.editList(list: listData)
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle{
@@ -80,11 +92,11 @@ extension ListViewController: EditListItemsDelegate {
 extension ListViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
-        case "PresentAddItems":
+        case addItemsSegue:
             let destinationNavigationController = segue.destination as! UINavigationController
             let destinationViewController = destinationNavigationController.viewControllers.first as! AddItemsViewController
                 destinationViewController.editListItemsDelegate = self
-            
+
         default:
             return
         }

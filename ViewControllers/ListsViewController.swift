@@ -234,7 +234,9 @@ extension ListsViewController: EditListDelegate {
     func editList(list: List) {
         lists[selectedListIndex] = list
         
-        listCollectionView.reloadItems(at: [IndexPath(item: lists.count - 1, section: 0)])
+        guard let cellToReload = listCollectionView.cellForItem(at: IndexPath(item: selectedListIndex, section: 0)) as? ListCollectionViewCell else { return }
+        
+        cellToReload.reloadTable()
     }
 }
 
@@ -260,7 +262,6 @@ extension ListsViewController {
 
 //MARK: - Navigation
 extension ListsViewController {
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
         case listSegueIdentigier:
