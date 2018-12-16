@@ -245,9 +245,7 @@ extension ListsViewController {
     func addNewList() {
         addListMode = true
         
-        let newList = List(name: "", items: [])
-        
-        lists = ModelController.shared.addNewList(newList: newList)
+        lists = ModelController.shared.addNewList()
         
         let newIndex = IndexPath(item: lists.count - 1, section: 0)
         

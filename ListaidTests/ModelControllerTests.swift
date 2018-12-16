@@ -12,76 +12,137 @@ import XCTest
 class ModelControllerTests: XCTestCase {
 
     var testLists: [List]!
-    var testList: List!
+    var testItemList: [Item]!
     
     let testRenameString = "Testing123"
+    let testItemName = "TestItem"
+    let testItemRename = "TestItemRename"
     
     override func setUp() {
-        testList = List(name: "Test List 1", items: [])
-        
-        let itemOne = Item(name: "Item One", listed: true, completed: false)
-        let itemTwo = Item(name: "Item Two", listed: true, completed: false)
-        
-        testList.items.append(itemOne)
-        testList.items.append(itemTwo)
-        
-        testLists = ModelController.shared.returnAllLists()
+        testLists = ModelController.shared.addNewList()
+        testItemList = ModelController.shared.addItemToList(listIndex: testLists.count - 1, itemName: testItemName)
     }
 
     override func tearDown() {
+        _ = ModelController.shared.deleteList(listIndex: testLists.count - 1)
         testLists = nil
-        testList = nil
+        testItemList = nil
     }
 
     func testAddNewList() {
-        // Only listed items will be returned from Model Controller in lists.
-        testLists = ModelController.shared.addNewList(newList: testList)
+        let currentListCount = testLists.count
         
-        let lastList = testLists.popLast()
-        
-        if let lastList = lastList {
-            XCTAssertEqual(lastList, testList)
-        } else {
-            XCTFail("Last list could not be unwrapped.")
-        }
+        testLists = ModelController.shared.addNewList()
+
+        XCTAssertEqual(testLists.count, currentListCount + 1)
     }
     
-    func testRenameList() {
-        ModelController.shared.updateListName(listIndex: testLists.count-1, newName: testRenameString)
+    func testUpdateListName() {
+        ModelController.shared.updateListName(listIndex: testLists.count - 1, newName: testRenameString)
         
-        let savedName = ModelController.shared.returnSavedListName(listIndex: testLists.count-1)
+        let savedName = ModelController.shared.returnSavedListName(listIndex: testLists.count - 1)
         
         XCTAssertEqual(savedName, testRenameString)
+    }
+    
+    func testReturnSavedListName() {
+        let savedListName = ModelController.shared.returnSavedListName(listIndex: testLists.count - 1)
+        
+        XCTAssertTrue(savedListName != nil)
+    }
+    
+    func testAddItemToList() {
+        let itemsInList = ModelController.shared.addItemToList(listIndex: testLists.count - 1, itemName: testItemName)
+        
+        if let itemsInList = itemsInList {
+            let lastItemInList = itemsInList.last
+            
+            XCTAssertEqual(testItemName, lastItemInList?.name)
+        } else {
+            XCTFail("Item was not added to list.")
+        }
     }
     
     func testReturnAllItemsInList() {
         let itemsInList = ModelController.shared.returnAllItemsInList(atIndex: testLists.count-1)
         
-        XCTAssertEqual(testList.items, itemsInList)
+        XCTAssertTrue(itemsInList != nil)
     }
     
-    func testFilteredList() {
-        let filteredTestList = ModelController.shared.returnFilteredList(atIndex: testLists.count-1)
+    func testReturnFilteredList() {
+        let filteredList = ModelController.shared.returnFilteredList(atIndex: testLists.count - 1)
         
-        XCTAssertEqual(filteredTestList, testList)
+        if let filteredList = filteredList {
+            let sansListed = filteredList.items.filter { $0.listed == true }
+            
+            XCTAssertTrue(sansListed.count == 0)
+        } else {
+            XCTFail("Filtered list could not be returned.")
+        }
+    }
+    
+    func testRenameItemInList() {
+        let updatedItemList = ModelController.shared.renameItemInList(listIndex: testLists.count - 1, itemIndex: 0, newName: testItemRename)
+        let renamedItem = updatedItemList?.first
+        
+        if let renamedItem = renamedItem {
+            XCTAssertEqual(renamedItem.name, testItemRename)
+        } else {
+            XCTFail("Renamed item could not be unwrapped.")
+        }
+    }
+    
+    func testToggleItemListStatus() {
+        ModelController.shared.toggleItemListStatus(listIndex: testLists.count - 1, itemIndex: 0)
+        
+        let itemsInList = ModelController.shared.returnAllItemsInList(atIndex: testLists.count-1)
+        let sampleItem = itemsInList?.first
+        
+        if let sampleItem = sampleItem {
+            XCTAssertTrue(sampleItem.listed == true)
+        } else {
+            XCTFail("Item could not be checked for list status.")
+        }
+    }
+    
+    func testToggleItemCompletionStatus() {
+        ModelController.shared.toggleItemCompletionStatus(listIndex: testLists.count - 1, itemIndex: 0)
+        
+        let itemsInList = ModelController.shared.returnAllItemsInList(atIndex: testLists.count - 1)
+        let sampleItem = itemsInList?.first
+        
+        if let sampleItem = sampleItem {
+            XCTAssertTrue(sampleItem.completed == true)
+        } else {
+            XCTFail("Item could not be checked for list status.")
+        }
+    }
+    
+    func testDeleteItemInList() {
+        let allItemsInList = ModelController.shared.returnAllItemsInList(atIndex: testLists.count - 1)
+        let updatedList = ModelController.shared.deleteItemInList(listIndex: testLists.count - 1, itemIndex: 0)
+        
+        if allItemsInList != nil && updatedList != nil {
+            XCTAssertTrue(allItemsInList!.count > updatedList!.count)
+        } else {
+            XCTFail("Item could not be deleted from list.")
+        }
     }
     
     func testDeleteList() {
-        var sampleLists = ModelController.shared.deleteList(listIndex: testLists.count-1)
+        let sampleLists = ModelController.shared.deleteList(listIndex: testLists.count-1)
         
         guard sampleLists.count > 0 else {
             XCTAssertTrue(sampleLists.count == 0)
             
+            testLists = sampleLists
+            
             return
         }
+
+        XCTAssertTrue(sampleLists.count < testLists.count)
         
-        let lastList = sampleLists.popLast()
-        
-        if let lastList = lastList {
-            XCTAssertNotEqual(lastList, testList)
-        } else {
-            XCTFail("Last list could not be unwrapped.")
-        }
+        testLists = sampleLists
     }
 
 }

@@ -11,11 +11,13 @@ import UIKit
 class ListViewController: UIViewController {
     
     @IBOutlet weak var listNameLabel: UILabel!
+    @IBOutlet weak var addItemsButton: UIButton!
     @IBOutlet weak var itemsTableView: UITableView!
     
     var editListDelegate: EditListDelegate?
     var zoomInteractionController: ZoomInteractionController?
-    var selectedList: List?
+    // Modify this setup to not force unwrap so much.
+    var selectedList: List!
     var selectedListName: String!
     var selectedListItems = [Item]()
     
@@ -35,11 +37,10 @@ class ListViewController: UIViewController {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        guard zoomInteractionController?.interactionInProgress ?? false else {
-            return
-        }
+        // Verify User Is Closing List
+        guard zoomInteractionController?.interactionInProgress ?? false else { return }
         
-        let listData = List(name: selectedListName, items: selectedListItems)
+        let listData = List(id: selectedList.id, name: selectedListName, items: selectedListItems)
         
         editListDelegate?.editList(list: listData)
     }

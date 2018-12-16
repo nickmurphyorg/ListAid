@@ -53,9 +53,11 @@ extension AddItemsViewController: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if searchResultItems.count == 0 {
-            let newItem = Item(name: searchBar.text!, listed: false, completed: false)
+            let updatedList = ModelController.shared.addItemToList(listIndex: selectedListIndex, itemName: searchBar.text!)
             
-            selectedListItems.append(newItem)
+            if let updatedList = updatedList {
+                selectedListItems = updatedList
+            }
             
             searchBar.text = ""
             searchBar.resignFirstResponder()
@@ -124,18 +126,22 @@ extension AddItemsViewController {
     func selectItem(index: Int) {
         if activeSearch() {
             // Find item in master list before changing the listed status.
-            checkItemInMasterList(updateItem: searchResultItems[index])
+            toggleItemInMasterList(updateItem: searchResultItems[index])
             
             searchResultItems[index].listed.toggle()
         } else {
             selectedListItems[index].listed.toggle()
+            
+            ModelController.shared.toggleItemListStatus(listIndex: selectedListIndex, itemIndex: index)
         }
     }
     
-    func checkItemInMasterList(updateItem: Item) {
+    func toggleItemInMasterList(updateItem: Item) {
         for (index, item) in selectedListItems.enumerated() {
             if item == updateItem {
                 selectedListItems[index].listed.toggle()
+                
+                ModelController.shared.toggleItemListStatus(listIndex: selectedListIndex, itemIndex: index)
             }
         }
     }
@@ -152,8 +158,6 @@ extension AddItemsViewController {
         let listedItems = selectedListItems.filter { $0.listed == true }
         
         editListItemsDelegate?.editItems(items: listedItems)
-        
-        ModelController.shared.updateListItems(atIndex: selectedListIndex, listItems: selectedListItems)
         
         dismiss(animated: true, completion: nil)
     }

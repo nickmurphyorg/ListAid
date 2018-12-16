@@ -253,6 +253,7 @@
                         <viewLayoutGuide key="safeArea" id="HJE-pJ-tha"/>
                     </view>
                     <connections>
+                        <outlet property="addItemsButton" destination="VQj-hv-51n" id="qad-Lv-3DL"/>
                         <outlet property="itemsTableView" destination="tLA-jk-km4" id="32S-Up-n2x"/>
                         <outlet property="listNameLabel" destination="Bcr-5G-8TV" id="4ju-41-aol"/>
                     </connections>

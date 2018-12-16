@@ -35,10 +35,6 @@ class ListZoomOutAnimationController: NSObject, UIViewControllerAnimatedTransiti
                 return
         }
         
-        //guard let test = originVC as? ListViewController else { return }
-        
-        //test.passDataToListsView()
-        
         let containerView = transitionContext.containerView
         containerView.insertSubview(destinationVC.view, at: 0)
         containerView.addSubview(snapShot)
