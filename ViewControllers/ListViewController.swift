@@ -16,10 +16,9 @@ class ListViewController: UIViewController {
     
     var editListDelegate: EditListDelegate?
     var zoomInteractionController: ZoomInteractionController?
-    // Modify this setup to not force unwrap so much.
-    var selectedList: List!
-    var selectedListName: String!
-    var selectedListItems = [Item]()
+    
+    var selectedList: Int = 0
+    var selectedListItems: [Item] = []
     
     private let cellIdentifier = "ItemCell"
     private let addItemsSegue = "PresentAddItems"
@@ -27,10 +26,16 @@ class ListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let selectedList = selectedList {
-            listNameLabel.text = selectedList.name
-            selectedListName = selectedList.name
-            selectedListItems = selectedList.items
+        let returnedListName = ModelController.shared.returnSavedListName(listIndex: selectedList)
+        let returnedListItems = ModelController.shared.returnFilteredItemsInList(atIndex: selectedList)
+        
+        if returnedListName != nil && returnedListItems != nil {
+            listNameLabel.text = returnedListName!
+            selectedListItems = returnedListItems!
+        } else {
+            let listErrorAlert = Alert.newAlert(title: "Error", message: "There was a problem finding your list.", hasCancel: false, buttonLabel: "Close", buttonStyle: .default, completion: nil)
+            
+            present(listErrorAlert, animated: true)
         }
         
         zoomInteractionController = ZoomInteractionController(viewController: self)
@@ -40,9 +45,7 @@ class ListViewController: UIViewController {
         // Verify User Is Closing List
         guard zoomInteractionController?.interactionInProgress ?? false else { return }
         
-        let listData = List(id: selectedList.id, name: selectedListName, items: selectedListItems)
-        
-        editListDelegate?.editList(list: listData)
+        editListDelegate?.editList(listItems: selectedListItems)
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle{
@@ -76,8 +79,36 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         selectedListItems[indexPath.row].completed.toggle()
         
+        ModelController.shared.toggleItemCompletionStatus(listIndex: selectedList, itemIndex: indexPath.row)
+        
         tableView.reloadData()
     }
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let removeAction = UITableViewRowAction(style: .normal, title: "Remove", handler: { [weak self] (action:UITableViewRowAction, indexPath: IndexPath) -> Void in
+            guard let listIndex = self?.selectedList else { return }
+            
+            self?.selectedListItems.remove(at: indexPath.row)
+            
+            ModelController.shared.toggleItemListStatus(listIndex: listIndex, itemIndex: indexPath.row)
+            
+            tableView.reloadData()
+        })
+        
+        removeAction.backgroundColor = UIColor.orange
+        
+        return [removeAction]
+    }
+}
+
+extension ListViewController: UIGestureRecognizerDelegate {
+    //func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        
+    //}
+    
+    //func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    //
+    //}
 }
 
 //MARK: - Edit List Delegate

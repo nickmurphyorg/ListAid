@@ -131,6 +131,14 @@ class ModelController {
         return lists[atIndex].items
     }
     
+    func returnFilteredItemsInList(atIndex: Int) -> [Item]? {
+        guard lists.indices.contains(atIndex) else { return nil }
+        
+        let filteredItemList = lists[atIndex].items.filter { $0.listed == true }
+        
+        return filteredItemList
+    }
+    
     func addItemToList(listIndex: Int, itemName: String) -> [Item]? {
         guard managedContext != nil && lists.indices.contains(listIndex) else { return returnAllItemsInList(atIndex: listIndex) }
         

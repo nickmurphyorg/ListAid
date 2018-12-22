@@ -22,7 +22,7 @@ class ListsViewController: UIViewController {
     var editListsMode = false
     var addListMode = false
     
-    private let listSegueIdentigier = "PresentListView"
+    private let listSegueIdentifier = "PresentListView"
     private let listCellIdentifier = "ListCell"
     private let newListCellIdentifier = "NewListCell"
     private let itemCellIdentifier = "ListItemCellSmall"
@@ -112,7 +112,7 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
         
         UserPreferences.shared.saveSelectedList(index: selectedListIndex)
         
-        performSegue(withIdentifier: listSegueIdentigier, sender: nil)
+        performSegue(withIdentifier: listSegueIdentifier, sender: nil)
     }
 }
 
@@ -231,8 +231,8 @@ extension ListsViewController: UITableViewDelegate, UITableViewDataSource {
 
 //MARK: - Edit List Delegate
 extension ListsViewController: EditListDelegate {
-    func editList(list: List) {
-        lists[selectedListIndex] = list
+    func editList(listItems: [Item]) {
+        lists[selectedListIndex].items = listItems
         
         guard let cellToReload = listCollectionView.cellForItem(at: IndexPath(item: selectedListIndex, section: 0)) as? ListCollectionViewCell else { return }
         
@@ -262,9 +262,9 @@ extension ListsViewController {
 extension ListsViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier {
-        case listSegueIdentigier:
+        case listSegueIdentifier:
             let destinationViewController = segue.destination as! ListViewController
-                destinationViewController.selectedList = lists[selectedListIndex]
+                destinationViewController.selectedList = selectedListIndex
                 destinationViewController.editListDelegate = self
                 destinationViewController.transitioningDelegate = self
             

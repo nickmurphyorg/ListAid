@@ -9,5 +9,5 @@
 import Foundation
 
 protocol EditListDelegate {
-    func editList(list: List)
+    func editList(listItems: [Item])
 }

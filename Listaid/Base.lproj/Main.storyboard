@@ -314,7 +314,8 @@
                                             </navigationBar>
                                             <searchBar contentMode="redraw" barStyle="black" searchBarStyle="minimal" placeholder="New Item" translatesAutoresizingMaskIntoConstraints="NO" id="ecP-4D-kU8">
                                                 <rect key="frame" x="0.0" y="44" width="375" height="56"/>
-                                                <textInputTraits key="textInputTraits"/>
+                                                <offsetWrapper key="searchTextPositionAdjustment" horizontal="0.0" vertical="0.0"/>
+                                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences" returnKeyType="done" textContentType="name"/>
                                                 <scopeButtonTitles>
                                                     <string>Title</string>
                                                     <string>Title</string>

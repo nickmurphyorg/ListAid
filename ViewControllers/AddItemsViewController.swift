@@ -16,11 +16,15 @@ class AddItemsViewController: UIViewController {
     @IBOutlet weak var backgroundView: UIView!
     @IBOutlet weak var itemsTableView: UITableView!
     
+    private var editingItemAtIndex: Int?
+    
     var editListItemsDelegate: EditListItemsDelegate?
     var selectedListIndex = Int()
     var selectedListItems = [Item]()
     var searchResultItems = [Item]()
     
+    private let addItemsTitle = "Add Items"
+    private let editItemTitle = "Edit Item"
     private let cellIdentifier = "ItemCell"
     
     override func viewDidLoad() {
@@ -52,18 +56,75 @@ extension AddItemsViewController: UISearchBarDelegate {
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        if searchResultItems.count == 0 {
-            let updatedList = ModelController.shared.addItemToList(listIndex: selectedListIndex, itemName: searchBar.text!)
-            
-            if let updatedList = updatedList {
-                selectedListItems = updatedList
-            }
-            
-            searchBar.text = ""
+        var updatedList: [Item]?
+        
+        guard searchBar.text! != "" else {
             searchBar.resignFirstResponder()
             
-            itemsTableView.reloadData()
+            editingItemAtIndex = nil
+            
+            return
         }
+        
+        if searchResultItems.count == 0 && editingItemAtIndex == nil {
+            updatedList = ModelController.shared.addItemToList(listIndex: selectedListIndex, itemName: searchBar.text!)
+            
+        } else if searchResultItems.count > 0 && editingItemAtIndex == nil {
+            var addNewItem = true
+            
+            for item in searchResultItems {
+                if searchBar.text!.lowercased() == item.name.lowercased() {
+                    addNewItem = false
+                }
+            }
+            
+            if addNewItem {
+                updatedList = ModelController.shared.addItemToList(listIndex: selectedListIndex, itemName: searchBar.text!)
+            }
+            
+        } else if searchResultItems.count == 0 && editingItemAtIndex != nil {
+            updatedList = ModelController.shared.renameItemInList(listIndex: selectedListIndex, itemIndex: editingItemAtIndex!, newName: searchBar.text!)
+            
+            editingItemAtIndex = nil
+            
+        } else if searchResultItems.count > 0 && editingItemAtIndex != nil {
+            var updateItemName = true
+            
+            for item in searchResultItems {
+                if searchBar.text!.lowercased() == item.name.lowercased() && selectedListItems[editingItemAtIndex!].id != item.id {
+                    // Item is renamed to an existing item
+                    updatedList = ModelController.shared.deleteItemInList(listIndex: selectedListIndex, itemIndex: editingItemAtIndex!)
+                    
+                    updateItemName = false
+                } else if searchBar.text!.lowercased() == item.name.lowercased() && selectedListItems[editingItemAtIndex!].id == item.id {
+                    // Item name was not changed
+                    updateItemName = false
+                }
+            }
+            
+            if updateItemName {
+                updatedList = ModelController.shared.renameItemInList(listIndex: selectedListIndex, itemIndex: editingItemAtIndex!, newName: searchBar.text!)
+            }
+            
+            editingItemAtIndex = nil
+        }
+        
+        navigationBar.topItem?.title = addItemsTitle
+        searchBar.text = ""
+        searchBar.resignFirstResponder()
+        
+        if let updatedList = updatedList {
+            selectedListItems = updatedList
+        }
+        
+        itemsTableView.reloadData()
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        navigationBar.topItem?.title = addItemsTitle
+        searchBar.text = ""
+        editingItemAtIndex = nil
+        itemsTableView.reloadData()
     }
     
     func emptySearchBar() -> Bool {
@@ -118,6 +179,39 @@ extension AddItemsViewController: UITableViewDelegate, UITableViewDataSource {
         selectItem(index: indexPath.row)
         
         tableView.reloadData()
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return editingItemAtIndex == nil
+    }
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { [weak self] (action:UITableViewRowAction, indexPath: IndexPath) in
+            guard let listIndex = self?.selectedListIndex else { return }
+            
+            let updatedList = ModelController.shared.deleteItemInList(listIndex: listIndex, itemIndex: indexPath.row)
+            
+            if let updatedList = updatedList {
+                self?.selectedListItems = updatedList
+            }
+            
+            tableView.reloadData()
+        }
+        
+        let editAction = UITableViewRowAction(style: .normal, title: "Edit") { [weak self] (action: UITableViewRowAction, indexPath: IndexPath) in
+            let itemName = self?.selectedListItems[indexPath.row].name
+            
+            self?.editingItemAtIndex = indexPath.row
+            self?.navigationBar.topItem?.title = self?.editItemTitle
+            self?.searchBar.text = itemName ?? ""
+            self?.searchBar.becomeFirstResponder()
+            
+            self?.matchingSearchResults(searchText: itemName ?? "")
+            
+            tableView.reloadData()
+        }
+        
+        return [deleteAction, editAction]
     }
 }
 
