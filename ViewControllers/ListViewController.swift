@@ -38,7 +38,9 @@ class ListViewController: UIViewController {
             present(listErrorAlert, animated: true)
         }
         
-        zoomInteractionController = ZoomInteractionController(viewController: self)
+        itemsTableView.bounces = false
+        
+        zoomInteractionController = ZoomInteractionController(viewController: self, tableView: itemsTableView)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -101,14 +103,11 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
+// MARK: - Gesture Delegate
 extension ListViewController: UIGestureRecognizerDelegate {
-    //func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        
-    //}
-    
-    //func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-    //
-    //}
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
 }
 
 //MARK: - Edit List Delegate
