@@ -152,7 +152,9 @@ extension AddItemsViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as? AddItemTableViewCell else {
+            fatalError("Could not init a new cell.")
+        }
         
         let itemData: Item
         
@@ -162,25 +164,17 @@ extension AddItemsViewController: UITableViewDelegate, UITableViewDataSource {
             itemData = selectedListItems[indexPath.row]
         }
         
-        cell.textLabel?.text = itemData.name
-        
-        if itemData.listed == true {
-            cell.accessoryType = .checkmark
-        } else {
-            cell.accessoryType = .none
-        }
+        cell.itemNameLabel.text = itemData.name
+        cell.toggleItemButton.isSelected = itemData.listed
+        cell.toggleItemDelegate = self
         
         return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
-        selectItem(index: indexPath.row)
-        
-        tableView.reloadData()
     }
-    
+
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return editingItemAtIndex == nil
     }
@@ -215,21 +209,30 @@ extension AddItemsViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-//MARK: - Helper Methods
-extension AddItemsViewController {
-    func selectItem(index: Int) {
-        if activeSearch() {
-            // Find item in master list before changing the listed status.
-            toggleItemInMasterList(updateItem: searchResultItems[index])
+//MARK: - Toggle Item Delegate
+extension AddItemsViewController: ToggleListedItem {
+    func toggleItem(tableCell: AddItemTableViewCell) {
+        if let indexPath = itemsTableView.indexPath(for: tableCell) {
+            let index = indexPath.row
             
-            searchResultItems[index].listed.toggle()
-        } else {
-            selectedListItems[index].listed.toggle()
+            if activeSearch() {
+                // Find item in master list before changing the listed status.
+                toggleItemInMasterList(updateItem: searchResultItems[index])
+                
+                searchResultItems[index].listed.toggle()
+            } else {
+                selectedListItems[index].listed.toggle()
+                
+                ModelController.shared.toggleItemListStatus(listIndex: selectedListIndex, itemIndex: index)
+            }
             
-            ModelController.shared.toggleItemListStatus(listIndex: selectedListIndex, itemIndex: index)
+            itemsTableView.reloadRows(at: [indexPath], with: .automatic)
         }
     }
-    
+}
+
+//MARK: - Helper Methods
+extension AddItemsViewController {
     func toggleItemInMasterList(updateItem: Item) {
         for (index, item) in selectedListItems.enumerated() {
             if item == updateItem {

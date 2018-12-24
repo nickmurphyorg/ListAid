@@ -278,13 +278,46 @@
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <prototypes>
-                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="ItemCell" id="KDV-iV-H29">
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="ItemCell" id="KDV-iV-H29" customClass="AddItemTableViewCell" customModule="Listaid" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="KDV-iV-H29" id="mp1-Pw-Bzw">
                                                     <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
+                                                    <subviews>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5A2-aq-MFY">
+                                                            <rect key="frame" x="15" y="11" width="22" height="22"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="height" constant="22" id="dTb-Iq-eZ7"/>
+                                                                <constraint firstAttribute="width" constant="22" id="tNo-tB-iI1"/>
+                                                            </constraints>
+                                                            <color key="tintColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                            <state key="normal" backgroundImage="ItemDeselected"/>
+                                                            <state key="selected" backgroundImage="ItemSelected"/>
+                                                            <connections>
+                                                                <action selector="tappedToggleButton:" destination="KDV-iV-H29" eventType="touchUpInside" id="3ic-ss-jxy"/>
+                                                            </connections>
+                                                        </button>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0UU-dI-Z1N">
+                                                            <rect key="frame" x="45" y="12" width="315" height="21"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstItem="0UU-dI-Z1N" firstAttribute="leading" secondItem="5A2-aq-MFY" secondAttribute="trailing" constant="8" id="B0w-dW-82Y"/>
+                                                        <constraint firstItem="5A2-aq-MFY" firstAttribute="leading" secondItem="mp1-Pw-Bzw" secondAttribute="leading" constant="15" id="EC5-wg-aK7"/>
+                                                        <constraint firstItem="5A2-aq-MFY" firstAttribute="top" secondItem="mp1-Pw-Bzw" secondAttribute="top" constant="11" id="Gc1-cB-O5Q"/>
+                                                        <constraint firstAttribute="trailing" secondItem="0UU-dI-Z1N" secondAttribute="trailing" constant="15" id="cf1-hZ-sxG"/>
+                                                        <constraint firstItem="0UU-dI-Z1N" firstAttribute="top" secondItem="mp1-Pw-Bzw" secondAttribute="top" constant="12" id="meN-aC-j8i"/>
+                                                        <constraint firstAttribute="bottom" secondItem="0UU-dI-Z1N" secondAttribute="bottom" constant="10.5" id="wZO-eC-55T"/>
+                                                    </constraints>
                                                 </tableViewCellContentView>
+                                                <connections>
+                                                    <outlet property="itemNameLabel" destination="0UU-dI-Z1N" id="jws-3d-59f"/>
+                                                    <outlet property="toggleItemButton" destination="5A2-aq-MFY" id="Ojn-sA-hTO"/>
+                                                </connections>
                                             </tableViewCell>
                                         </prototypes>
                                         <connections>
@@ -487,5 +520,7 @@
     <resources>
         <image name="AddItems" width="24" height="24"/>
         <image name="DeleteList" width="24" height="24"/>
+        <image name="ItemDeselected" width="22" height="22"/>
+        <image name="ItemSelected" width="22" height="22"/>
     </resources>
 </document>
