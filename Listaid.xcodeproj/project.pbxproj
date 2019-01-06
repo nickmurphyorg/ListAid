@@ -7,12 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D10FEDF521DD9DA4004B9E5A /* StrikeInteractionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FEDF421DD9DA4004B9E5A /* StrikeInteractionController.swift */; };
+		D10FEDF721E2821A004B9E5A /* StrikeCompleteDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10FEDF621E2821A004B9E5A /* StrikeCompleteDelegate.swift */; };
 		D11B7F88218E1B5D009F1A77 /* ListZoomInAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11B7F87218E1B5D009F1A77 /* ListZoomInAnimationController.swift */; };
 		D11B7F8A218FABB2009F1A77 /* ListZoomOutAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11B7F89218FABB2009F1A77 /* ListZoomOutAnimationController.swift */; };
 		D11B7F8C21976B42009F1A77 /* ZoomInteractionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11B7F8B21976B41009F1A77 /* ZoomInteractionController.swift */; };
 		D140862521A0FF4800363E01 /* AlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D140862421A0FF4800363E01 /* AlertController.swift */; };
 		D15E3F5B21D13EF7008EF0EE /* AddItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15E3F5A21D13EF7008EF0EE /* AddItemTableViewCell.swift */; };
 		D15E3F5D21D14A07008EF0EE /* ToggleListedItemDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15E3F5C21D14A07008EF0EE /* ToggleListedItemDelegate.swift */; };
+		D15E3F5F21D3F89C008EF0EE /* ItemSmallTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15E3F5E21D3F89C008EF0EE /* ItemSmallTableViewCell.swift */; };
+		D15E3F6121D3FDAE008EF0EE /* ItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15E3F6021D3FDAE008EF0EE /* ItemTableViewCell.swift */; };
 		D184E06D2173BB6100F9726C /* UserPreferencesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D184E06C2173BB6000F9726C /* UserPreferencesController.swift */; };
 		D184E06F217BD33E00F9726C /* EditListDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D184E06E217BD33E00F9726C /* EditListDelegate.swift */; };
 		D184E071217BD49A00F9726C /* EditListItemsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D184E070217BD49A00F9726C /* EditListItemsDelegate.swift */; };
@@ -54,12 +58,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D10FEDF421DD9DA4004B9E5A /* StrikeInteractionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = StrikeInteractionController.swift; path = ViewControllers/InteractionControllers/StrikeInteractionController.swift; sourceTree = SOURCE_ROOT; };
+		D10FEDF621E2821A004B9E5A /* StrikeCompleteDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = StrikeCompleteDelegate.swift; path = Protocols/StrikeCompleteDelegate.swift; sourceTree = SOURCE_ROOT; };
 		D11B7F87218E1B5D009F1A77 /* ListZoomInAnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListZoomInAnimationController.swift; sourceTree = "<group>"; };
 		D11B7F89218FABB2009F1A77 /* ListZoomOutAnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ListZoomOutAnimationController.swift; path = AnimationControllers/ListZoomOutAnimationController.swift; sourceTree = SOURCE_ROOT; };
 		D11B7F8B21976B41009F1A77 /* ZoomInteractionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ZoomInteractionController.swift; path = ViewControllers/InteractionControllers/ZoomInteractionController.swift; sourceTree = SOURCE_ROOT; };
 		D140862421A0FF4800363E01 /* AlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertController.swift; sourceTree = "<group>"; };
 		D15E3F5A21D13EF7008EF0EE /* AddItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemTableViewCell.swift; sourceTree = "<group>"; };
 		D15E3F5C21D14A07008EF0EE /* ToggleListedItemDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ToggleListedItemDelegate.swift; path = Protocols/ToggleListedItemDelegate.swift; sourceTree = SOURCE_ROOT; };
+		D15E3F5E21D3F89C008EF0EE /* ItemSmallTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ItemSmallTableViewCell.swift; path = Cells/ItemSmallTableViewCell.swift; sourceTree = SOURCE_ROOT; };
+		D15E3F6021D3FDAE008EF0EE /* ItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemTableViewCell.swift; sourceTree = "<group>"; };
 		D184E06C2173BB6000F9726C /* UserPreferencesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferencesController.swift; sourceTree = "<group>"; };
 		D184E06E217BD33E00F9726C /* EditListDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListDelegate.swift; sourceTree = "<group>"; };
 		D184E070217BD49A00F9726C /* EditListItemsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListItemsDelegate.swift; sourceTree = "<group>"; };
@@ -127,6 +135,7 @@
 			isa = PBXGroup;
 			children = (
 				D11B7F8B21976B41009F1A77 /* ZoomInteractionController.swift */,
+				D10FEDF421DD9DA4004B9E5A /* StrikeInteractionController.swift */,
 			);
 			name = InteractionControllers;
 			path = ViewControllers/InteractionControllers;
@@ -225,6 +234,8 @@
 				D1E7B371216154BC00C11416 /* ListCollectionViewCell.swift */,
 				D1E7B37C2165979000C11416 /* NewListCollectionViewCell.swift */,
 				D15E3F5A21D13EF7008EF0EE /* AddItemTableViewCell.swift */,
+				D15E3F5E21D3F89C008EF0EE /* ItemSmallTableViewCell.swift */,
+				D15E3F6021D3FDAE008EF0EE /* ItemTableViewCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -250,6 +261,7 @@
 		D1EBC0512173A9D70050D784 /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
+				D10FEDF621E2821A004B9E5A /* StrikeCompleteDelegate.swift */,
 				D184E06E217BD33E00F9726C /* EditListDelegate.swift */,
 				D1A8E014218508D600F8E36C /* DeleteListDelegate.swift */,
 				D184E070217BD49A00F9726C /* EditListItemsDelegate.swift */,
@@ -393,6 +405,8 @@
 				D184E06D2173BB6100F9726C /* UserPreferencesController.swift in Sources */,
 				D15E3F5B21D13EF7008EF0EE /* AddItemTableViewCell.swift in Sources */,
 				D1EBC04E2173A6170050D784 /* AddItemsViewController.swift in Sources */,
+				D15E3F6121D3FDAE008EF0EE /* ItemTableViewCell.swift in Sources */,
+				D10FEDF721E2821A004B9E5A /* StrikeCompleteDelegate.swift in Sources */,
 				D1E7B36F2161546A00C11416 /* Item.swift in Sources */,
 				D1E7B33D2161534300C11416 /* ListsViewController.swift in Sources */,
 				D1E7B37D2165979000C11416 /* NewListCollectionViewCell.swift in Sources */,
@@ -410,7 +424,9 @@
 				D140862521A0FF4800363E01 /* AlertController.swift in Sources */,
 				D184E06F217BD33E00F9726C /* EditListDelegate.swift in Sources */,
 				D11B7F88218E1B5D009F1A77 /* ListZoomInAnimationController.swift in Sources */,
+				D15E3F5F21D3F89C008EF0EE /* ItemSmallTableViewCell.swift in Sources */,
 				D1E7B37B216155CF00C11416 /* SettingsViewController.swift in Sources */,
+				D10FEDF521DD9DA4004B9E5A /* StrikeInteractionController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -623,6 +639,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9XZS64KL8R;
 				INFOPLIST_FILE = ListaidTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -643,6 +660,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9XZS64KL8R;
 				INFOPLIST_FILE = ListaidTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -662,6 +680,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9XZS64KL8R;
 				INFOPLIST_FILE = ListaidUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -681,6 +700,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9XZS64KL8R;
 				INFOPLIST_FILE = ListaidUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

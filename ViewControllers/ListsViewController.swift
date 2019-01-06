@@ -213,17 +213,19 @@ extension ListsViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: itemCellIdentifier, for: indexPath)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: itemCellIdentifier, for: indexPath) as? ItemSmallTableViewCell else {
+            fatalError("Could not initalize an Item Small Tableview Cell.")
+        }
         
         let item = lists[tableView.tag].items[indexPath.row]
         
-        cell.textLabel?.text = item.name
+        cell.itemNameLabel.text = item.name
         
-        if item.completed == true {
-            cell.accessoryType = .checkmark
-        } else {
-            cell.accessoryType = .none
-        }
+        let labelWidth = cell.itemNameLabel.intrinsicContentSize.width + 22
+        let strikeWidth = item.completed ? labelWidth : 8
+        
+        cell.strikeThrough.frame.size.width = strikeWidth
+        cell.contentView.addSubview(cell.strikeThrough)
         
         return cell
     }

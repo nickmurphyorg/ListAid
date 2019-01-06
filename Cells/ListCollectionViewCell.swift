@@ -49,7 +49,6 @@ extension ListCollectionViewCell {
     func setNameFieldDelegate <T: UITextFieldDelegate> (textFieldDelegate: T) {
         listNameField.delegate = textFieldDelegate
     }
-    
 }
 
 //MARK: - Delete List Delegate
@@ -69,5 +68,4 @@ extension ListCollectionViewCell {
     func reloadTable(){
         listTableView.reloadData()
     }
-    
 }

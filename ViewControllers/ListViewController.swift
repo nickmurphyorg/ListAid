@@ -22,6 +22,7 @@ class ListViewController: UIViewController {
     
     private let cellIdentifier = "ItemCell"
     private let addItemsSegue = "PresentAddItems"
+    private let strikeStandardWidth: CGFloat = 10
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -63,30 +64,29 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as? ItemTableViewCell else {
+            fatalError("Could not initalize a new Item Table View Cell.")
+        }
         
         let itemData = selectedListItems[indexPath.row]
         
-        cell.textLabel?.text = itemData.name
+        cell.itemNameLabel.text = itemData.name
         
-        if itemData.completed == true {
-            cell.accessoryType = .checkmark
-        } else {
-            cell.accessoryType = .none
-        }
+        let completeStrikeWidth = cell.itemNameLabel.intrinsicContentSize.width + 28
+        let strikeWidth = itemData.completed ? completeStrikeWidth : strikeStandardWidth
+        
+        cell.strikeThrough.frame.size.width = strikeWidth
+        cell.contentView.addSubview(cell.strikeThrough)
+        
+        cell.strikeCompleteDelegate = self
+        cell.strikeInteractionController = StrikeInteractionController.init(tableCell: cell, strikeStandardWidth: strikeStandardWidth, strikeCompleteWidth: completeStrikeWidth)
         
         return cell
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedListItems[indexPath.row].completed.toggle()
-        
-        ModelController.shared.toggleItemCompletionStatus(listIndex: selectedList, itemIndex: indexPath.row)
-        
-        tableView.reloadData()
-    }
-    
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        var cellOptions: [UITableViewRowAction] = []
+        
         let removeAction = UITableViewRowAction(style: .normal, title: "Remove", handler: { [weak self] (action:UITableViewRowAction, indexPath: IndexPath) -> Void in
             guard let listIndex = self?.selectedList else { return }
             
@@ -98,8 +98,27 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
         })
         
         removeAction.backgroundColor = UIColor.orange
+        cellOptions.append(removeAction)
         
-        return [removeAction]
+        let relistAction = UITableViewRowAction(style: .normal, title: "Relist", handler: { [weak self] (action: UITableViewRowAction, indexPath: IndexPath) -> Void in
+            guard let listIndex = self?.selectedList else { return }
+            guard let editingCell = tableView.cellForRow(at: indexPath) as? ItemTableViewCell else { return }
+            guard let weakSelf = self else { return }
+            
+            UIView.animate(withDuration: 1) {
+                editingCell.strikeThrough.frame.size.width = weakSelf.strikeStandardWidth
+            }
+            
+            weakSelf.selectedListItems[indexPath.row].completed.toggle()
+            
+            ModelController.shared.toggleItemCompletionStatus(listIndex: listIndex, itemIndex: indexPath.row)
+        })
+        
+        if selectedListItems[indexPath.row].completed {
+            cellOptions.append(relistAction)
+        }
+        
+        return cellOptions
     }
 }
 
@@ -107,6 +126,20 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
 extension ListViewController: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
+    }
+}
+
+// MARK: - Strike Complete Delegate
+// This method is getting the wrong index...
+extension ListViewController: StrikeCompleteDelegate {
+    func completeItem(tableViewCell: UITableViewCell) {
+        guard let cellPath = itemsTableView.indexPath(for: tableViewCell) else { return }
+        
+        selectedListItems[cellPath.row].completed.toggle()
+        
+        ModelController.shared.toggleItemCompletionStatus(listIndex: selectedList, itemIndex: cellPath.row)
+        
+        itemsTableView.reloadRows(at: [cellPath], with: .automatic)
     }
 }
 

@@ -92,9 +92,8 @@ class ModelController {
     func updateListName(listIndex: Int, newName: String) {
         guard managedContext != nil && lists.indices.contains(listIndex) else { return }
         
-        let listToRename = managedContext!.object(with: lists[listIndex].id)
-        
-        listToRename.setValue(newName, forKey: listNameKey)
+        let listToRename = managedContext!.object(with: lists[listIndex].id) as! ListObject
+        listToRename.name = newName
         
         do {
             try managedContext?.save()
@@ -252,7 +251,7 @@ class ModelController {
             
             lists[listIndex].items[itemIndex].completed.toggle()
             
-            print("Item completion was toggled.")
+            print("\(lists[listIndex].items[itemIndex].name) completion was toggled.")
         } catch let error as NSError {
             print("Item completion could not be toggled. Error: \(error)")
         }
