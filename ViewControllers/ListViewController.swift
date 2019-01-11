@@ -89,10 +89,11 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
         
         let removeAction = UITableViewRowAction(style: .normal, title: "Remove", handler: { [weak self] (action:UITableViewRowAction, indexPath: IndexPath) -> Void in
             guard let listIndex = self?.selectedList else { return }
+            guard let weakSelf = self else { return }
             
-            self?.selectedListItems.remove(at: indexPath.row)
+            ModelController.shared.toggleItemListStatus(listIndex: listIndex, itemID: weakSelf.selectedListItems[indexPath.row].id)
             
-            ModelController.shared.toggleItemListStatus(listIndex: listIndex, itemIndex: indexPath.row)
+            weakSelf.selectedListItems.remove(at: indexPath.row)
             
             tableView.reloadData()
         })
@@ -111,7 +112,7 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
             
             weakSelf.selectedListItems[indexPath.row].completed.toggle()
             
-            ModelController.shared.toggleItemCompletionStatus(listIndex: listIndex, itemIndex: indexPath.row)
+            ModelController.shared.toggleItemCompletionStatus(listIndex: listIndex, itemID: weakSelf.selectedListItems[indexPath.row].id)
         })
         
         if selectedListItems[indexPath.row].completed {
@@ -137,7 +138,7 @@ extension ListViewController: StrikeCompleteDelegate {
         
         selectedListItems[cellPath.row].completed.toggle()
         
-        ModelController.shared.toggleItemCompletionStatus(listIndex: selectedList, itemIndex: cellPath.row)
+        ModelController.shared.toggleItemCompletionStatus(listIndex: selectedList, itemID: selectedListItems[cellPath.row].id)
         
         itemsTableView.reloadRows(at: [cellPath], with: .automatic)
     }

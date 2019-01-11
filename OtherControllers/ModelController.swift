@@ -213,45 +213,47 @@ class ModelController {
         return returnAllItemsInList(atIndex: listIndex)
     }
     
-    func toggleItemListStatus(listIndex: Int, itemIndex: Int) {
-        guard managedContext != nil &&
-            lists.indices.contains(listIndex) &&
-            lists[listIndex].items.indices.contains(itemIndex)
-        else {
-            return
-        }
+    func toggleItemListStatus(listIndex: Int, itemID: NSManagedObjectID) {
+        guard managedContext != nil && lists.indices.contains(listIndex) else { return }
         
-        let itemEntity = managedContext!.object(with: lists[listIndex].items[itemIndex].id) as! ItemObject
+        let itemEntity = managedContext!.object(with: itemID) as! ItemObject
         itemEntity.listed.toggle()
         
         do {
             try managedContext?.save()
             
-            lists[listIndex].items[itemIndex].listed.toggle()
+            for (index, item) in lists[listIndex].items.enumerated() {
+                if item.id === itemID {
+                    lists[listIndex].items[index].listed.toggle()
+                    
+                    break
+                }
+            }
             
-            print("Item was toggled.")
+            print("\(itemEntity.name ?? "Item") was toggled.")
         } catch let error as NSError {
-            print("Item could not be toggled. Error: \(error)")
+            print("Item listed could not be toggled. Error: \(error)")
         }
     }
     
-    func toggleItemCompletionStatus(listIndex: Int, itemIndex: Int) {
-        guard managedContext != nil &&
-            lists.indices.contains(listIndex) &&
-            lists[listIndex].items.indices.contains(itemIndex)
-        else {
-            return
-        }
+    func toggleItemCompletionStatus(listIndex: Int, itemID: NSManagedObjectID) {
+        guard managedContext != nil && lists.indices.contains(listIndex) else { return }
         
-        let itemToToggle = managedContext!.object(with: lists[listIndex].items[itemIndex].id) as! ItemObject
+        let itemToToggle = managedContext!.object(with: itemID) as! ItemObject
         itemToToggle.completed.toggle()
         
         do {
             try managedContext?.save()
             
-            lists[listIndex].items[itemIndex].completed.toggle()
+            for (index, item) in lists[listIndex].items.enumerated() {
+                if item.id === itemID {
+                    lists[listIndex].items[index].completed.toggle()
+                    
+                    break
+                }
+            }
             
-            print("\(lists[listIndex].items[itemIndex].name) completion was toggled.")
+            print("\(itemToToggle.name ?? "Item") completion was toggled.")
         } catch let error as NSError {
             print("Item completion could not be toggled. Error: \(error)")
         }

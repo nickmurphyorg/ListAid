@@ -223,7 +223,7 @@ extension AddItemsViewController: ToggleListedItem {
             } else {
                 selectedListItems[index].listed.toggle()
                 
-                ModelController.shared.toggleItemListStatus(listIndex: selectedListIndex, itemIndex: index)
+                ModelController.shared.toggleItemListStatus(listIndex: selectedListIndex, itemID: selectedListItems[index].id)
             }
             
             itemsTableView.reloadRows(at: [indexPath], with: .automatic)
@@ -238,7 +238,7 @@ extension AddItemsViewController {
             if item == updateItem {
                 selectedListItems[index].listed.toggle()
                 
-                ModelController.shared.toggleItemListStatus(listIndex: selectedListIndex, itemIndex: index)
+                ModelController.shared.toggleItemListStatus(listIndex: selectedListIndex, itemID: selectedListItems[index].id)
             }
         }
     }

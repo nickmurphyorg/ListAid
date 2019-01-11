@@ -93,26 +93,28 @@ class ModelControllerTests: XCTestCase {
     }
     
     func testToggleItemListStatus() {
-        ModelController.shared.toggleItemListStatus(listIndex: testLists.count - 1, itemIndex: 0)
+        let itemID = testItemList[0].id
         
-        let itemsInList = ModelController.shared.returnAllItemsInList(atIndex: testLists.count-1)
-        let sampleItem = itemsInList?.first
+        ModelController.shared.toggleItemListStatus(listIndex: testLists.count - 1, itemID: itemID)
         
-        if let sampleItem = sampleItem {
-            XCTAssertTrue(sampleItem.listed == true)
+        let itemsInList = ModelController.shared.returnAllItemsInList(atIndex: testLists.count - 1)
+        
+        if let itemsInList = itemsInList {
+            XCTAssertTrue(itemsInList[0].listed)
         } else {
             XCTFail("Item could not be checked for list status.")
         }
     }
     
     func testToggleItemCompletionStatus() {
-        ModelController.shared.toggleItemCompletionStatus(listIndex: testLists.count - 1, itemIndex: 0)
+        let itemID = testItemList[0].id
+        
+        ModelController.shared.toggleItemCompletionStatus(listIndex: testLists.count - 1, itemID: itemID)
         
         let itemsInList = ModelController.shared.returnAllItemsInList(atIndex: testLists.count - 1)
-        let sampleItem = itemsInList?.first
         
-        if let sampleItem = sampleItem {
-            XCTAssertTrue(sampleItem.completed == true)
+        if let itemsInList = itemsInList {
+            XCTAssertTrue(itemsInList[0].completed)
         } else {
             XCTFail("Item could not be checked for list status.")
         }
