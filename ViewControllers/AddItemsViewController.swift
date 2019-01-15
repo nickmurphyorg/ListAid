@@ -10,7 +10,7 @@ import UIKit
 
 class AddItemsViewController: UIViewController {
 
-    @IBOutlet weak var navigationView: UIView!
+    @IBOutlet weak var navigationView: UIVisualEffectView!
     @IBOutlet weak var navigationBar: UINavigationBar!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var backgroundView: UIView!
@@ -26,6 +26,15 @@ class AddItemsViewController: UIViewController {
     private let addItemsTitle = "Add Items"
     private let editItemTitle = "Edit Item"
     private let cellIdentifier = "ItemCell"
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationView.layer.shadowColor = UIColor.black.cgColor
+        navigationView.layer.shadowOpacity = 0.3
+        navigationView.layer.shadowRadius = 0
+        navigationView.layer.shadowOffset = CGSize(width: 0, height: 0.5)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()

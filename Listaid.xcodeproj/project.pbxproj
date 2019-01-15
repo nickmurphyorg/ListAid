@@ -141,13 +141,6 @@
 			path = ViewControllers/InteractionControllers;
 			sourceTree = "<group>";
 		};
-		D11F4E9721B46CCD003EDCB7 /* Dictionaries */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Dictionaries;
-			sourceTree = "<group>";
-		};
 		D1E7B32E2161534300C11416 = {
 			isa = PBXGroup;
 			children = (
@@ -160,7 +153,6 @@
 				D1E7B3742161551700C11416 /* OtherControllers */,
 				D1EBC0512173A9D70050D784 /* Protocols */,
 				D1E7B3772161555600C11416 /* Extensions */,
-				D11F4E9721B46CCD003EDCB7 /* Dictionaries */,
 				D1E7B3512161534600C11416 /* ListaidTests */,
 				D1E7B35C2161534600C11416 /* ListaidUITests */,
 				D1E7B3382161534300C11416 /* Products */,

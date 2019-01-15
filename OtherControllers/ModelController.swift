@@ -218,6 +218,7 @@ class ModelController {
         
         let itemEntity = managedContext!.object(with: itemID) as! ItemObject
         itemEntity.listed.toggle()
+        itemEntity.completed = false
         
         do {
             try managedContext?.save()

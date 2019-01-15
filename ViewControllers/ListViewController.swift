@@ -17,8 +17,8 @@ class ListViewController: UIViewController {
     var editListDelegate: EditListDelegate?
     var zoomInteractionController: ZoomInteractionController?
     
-    var selectedList: Int = 0
-    var selectedListItems: [Item] = []
+    var selectedList = 0
+    var selectedListItems = [Item]()
     
     private let cellIdentifier = "ItemCell"
     private let addItemsSegue = "PresentAddItems"
@@ -131,7 +131,6 @@ extension ListViewController: UIGestureRecognizerDelegate {
 }
 
 // MARK: - Strike Complete Delegate
-// This method is getting the wrong index...
 extension ListViewController: StrikeCompleteDelegate {
     func completeItem(tableViewCell: UITableViewCell) {
         guard let cellPath = itemsTableView.indexPath(for: tableViewCell) else { return }
