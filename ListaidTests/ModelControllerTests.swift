@@ -132,7 +132,7 @@ class ModelControllerTests: XCTestCase {
     }
     
     func testDeleteList() {
-        let sampleLists = ModelController.shared.deleteList(listIndex: testLists.count-1)
+        let sampleLists = ModelController.shared.deleteList(listIndex: testLists.count - 1)
         
         guard sampleLists.count > 0 else {
             XCTAssertTrue(sampleLists.count == 0)
@@ -145,6 +145,29 @@ class ModelControllerTests: XCTestCase {
         XCTAssertTrue(sampleLists.count < testLists.count)
         
         testLists = sampleLists
+    }
+    
+    func testPurgeList() {
+        let itemID = testItemList[0].id
+        
+        ModelController.shared.toggleItemListStatus(listIndex: testLists.count - 1, itemID: itemID)
+        ModelController.shared.toggleItemCompletionStatus(listIndex: testLists.count - 1, itemID: itemID)
+        
+        let purgedList = ModelController.shared.purgeCompletedItems(listIndex: testLists.count - 1)
+        
+        var allItemsPurged = true
+        
+        if let purgedList = purgedList {
+            for item in purgedList.items {
+                if item.listed || item.completed {
+                    allItemsPurged = false
+                }
+            }
+            
+            XCTAssert(allItemsPurged)
+        } else {
+            XCTFail("Purged list could not be unwrapped.")
+        }
     }
 
 }

@@ -259,4 +259,35 @@ class ModelController {
             print("Item completion could not be toggled. Error: \(error)")
         }
     }
+    
+    func purgeCompletedItems(listIndex: Int) -> List? {
+        guard managedContext != nil && lists.indices.contains(listIndex) else { return nil }
+        
+        var editedItemIndicies = [Int]()
+        
+        for (index, item) in lists[listIndex].items.enumerated() {
+            if item.completed && item.listed {
+                let itemToPurge = managedContext!.object(with: item.id) as! ItemObject
+                itemToPurge.completed.toggle()
+                itemToPurge.listed.toggle()
+                
+                editedItemIndicies.append(index)
+            }
+        }
+        
+        do {
+            try managedContext?.save()
+            
+            for index in editedItemIndicies {
+                lists[listIndex].items[index].completed.toggle()
+                lists[listIndex].items[index].listed.toggle()
+            }
+            
+            print("\(lists[listIndex].name) has been purged.")
+        } catch let error as NSError {
+            print("Could not purge list: \(error)")
+        }
+        
+        return returnFilteredList(atIndex: listIndex)
+    }
 }

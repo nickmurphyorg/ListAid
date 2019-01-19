@@ -202,14 +202,16 @@ extension AddItemsViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         let editAction = UITableViewRowAction(style: .normal, title: "Edit") { [weak self] (action: UITableViewRowAction, indexPath: IndexPath) in
-            let itemName = self?.selectedListItems[indexPath.row].name
+            guard let weakSelf = self else { return }
             
-            self?.editingItemAtIndex = indexPath.row
-            self?.navigationBar.topItem?.title = self?.editItemTitle
-            self?.searchBar.text = itemName ?? ""
-            self?.searchBar.becomeFirstResponder()
+            let itemName = weakSelf.selectedListItems[indexPath.row].name
             
-            self?.matchingSearchResults(searchText: itemName ?? "")
+            weakSelf.editingItemAtIndex = indexPath.row
+            weakSelf.navigationBar.topItem?.title = weakSelf.editItemTitle
+            weakSelf.searchBar.text = itemName
+            weakSelf.searchBar.becomeFirstResponder()
+            
+            weakSelf.matchingSearchResults(searchText: itemName)
             
             tableView.reloadData()
         }
@@ -255,7 +257,6 @@ extension AddItemsViewController {
 
 //MARK: - Navigation
 extension AddItemsViewController {
-    
     @IBAction func dismissScreen(_ sender: UIBarButtonItem) {
         dismiss(animated: true, completion: nil)
     }

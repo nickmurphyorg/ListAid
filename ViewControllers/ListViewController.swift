@@ -102,9 +102,10 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
         cellOptions.append(removeAction)
         
         let relistAction = UITableViewRowAction(style: .normal, title: "Relist", handler: { [weak self] (action: UITableViewRowAction, indexPath: IndexPath) -> Void in
-            guard let listIndex = self?.selectedList else { return }
-            guard let editingCell = tableView.cellForRow(at: indexPath) as? ItemTableViewCell else { return }
             guard let weakSelf = self else { return }
+            guard let editingCell = tableView.cellForRow(at: indexPath) as? ItemTableViewCell else { return }
+            
+            let listIndex = weakSelf.selectedList
             
             UIView.animate(withDuration: 1) {
                 editingCell.strikeThrough.frame.size.width = weakSelf.strikeStandardWidth
@@ -149,6 +150,21 @@ extension ListViewController: EditListItemsDelegate {
         selectedListItems = items
         
         itemsTableView.reloadData()
+    }
+}
+
+//MARK: - Shake To Purge
+extension ListViewController {
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        if motion == .motionShake {
+            let purgedList = ModelController.shared.purgeCompletedItems(listIndex: selectedList)
+            
+            if let purgedList = purgedList {
+                selectedListItems = purgedList.items
+                
+                itemsTableView.reloadSections(IndexSet.init(integer: 0), with: .automatic)
+            }
+        }
     }
 }
 
