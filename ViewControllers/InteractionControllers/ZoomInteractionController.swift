@@ -33,13 +33,15 @@ class ZoomInteractionController: UIPercentDrivenInteractiveTransition {
     }
     
     @objc func handleGesture(_ gestureRecognizer: UIPanGestureRecognizer) {
+        let translation = gestureRecognizer.translation(in: gestureRecognizer.view)
+        
         switch gestureRecognizer.state {
             case .began:
-                if tableView.contentOffset.y == 0 {
+                if tableView.contentOffset.y == 0 && translation.y > translation.x {
                     interactionInProgress = true
                 }
             case .changed:
-                let translation = gestureRecognizer.translation(in: gestureRecognizer.view)
+                
                 let beginZoomAnimation = translation.y > 10
                 
                 var progress = (translation.y / 200)
