@@ -277,7 +277,7 @@
                                     <constraint firstAttribute="height" constant="30" id="LFt-GE-I1t"/>
                                     <constraint firstAttribute="width" constant="30" id="ni9-Pb-sZy"/>
                                 </constraints>
-                                <state key="normal" image="AddItems"/>
+                                <state key="normal" backgroundImage="AddItems"/>
                                 <connections>
                                     <segue destination="dlF-Ew-wMl" kind="presentation" identifier="PresentAddItems" id="3fR-w0-noA"/>
                                 </connections>

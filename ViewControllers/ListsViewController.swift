@@ -281,30 +281,36 @@ extension ListsViewController {
 extension ListsViewController: UIViewControllerTransitioningDelegate {
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         let selectedListIndexPath = IndexPath(item: selectedListIndex, section: 0)
-        let selectedCellAttributes = listCollectionView.layoutAttributesForItem(at: selectedListIndexPath)
         
-        guard let cellFrame = selectedCellAttributes?.frame else { return nil }
+        guard let destinationVC = presented as? ListViewController,
+            let addItemsButton = destinationVC.addItemsButton,
+            let selectedCell = listCollectionView.cellForItem(at: selectedListIndexPath) as? ListCollectionViewCell,
+            let listNameLabel = selectedCell.listNameField
+            else {
+                return nil
+        }
         
+        let cellFrame = selectedCell.frame
         let selectedCellFrame = listCollectionView.convert(cellFrame, to: listCollectionView.superview)
         
-        return ListZoomInAnimationController(listCellFrame: selectedCellFrame)
+        return ListZoomInAnimationController(listCellFrame: selectedCellFrame, listNameLabel: listNameLabel, addItemsButton: addItemsButton)
     }
     
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        guard let originVC = dismissed as? ListViewController else {
-            return nil
-        }
-        
         let selectedListIndexPath = IndexPath(item: selectedListIndex, section: 0)
-        let selectedCellAttributes = listCollectionView.layoutAttributesForItem(at: selectedListIndexPath)
         
-        guard let cellFrame = selectedCellAttributes?.frame else {
-            return nil
+        guard let originVC = dismissed as? ListViewController,
+            let addItemsButton = originVC.addItemsButton,
+            let selectedCell = listCollectionView.cellForItem(at: selectedListIndexPath) as? ListCollectionViewCell,
+            let listNameLabel = selectedCell.listNameField
+            else {
+                return nil
         }
         
+        let cellFrame = selectedCell.frame
         let selectedCellFrame = listCollectionView.convert(cellFrame, to: listCollectionView.superview)
         
-        return ListZoomOutAnimationController(listCellFrame: selectedCellFrame, intereactionController: originVC.zoomInteractionController)
+        return ListZoomOutAnimationController(listCellFrame: selectedCellFrame, listNameLabel: listNameLabel, addItemsButton: addItemsButton, intereactionController: originVC.zoomInteractionController)
     }
     
     func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
@@ -314,6 +320,7 @@ extension ListsViewController: UIViewControllerTransitioningDelegate {
             else {
                 return nil
         }
+        
         return interactionController
     }
 }

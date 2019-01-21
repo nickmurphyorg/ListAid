@@ -129,6 +129,8 @@ extension ListViewController: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
+    
+    //TODO - Need to block pull down gesture when swiping cells...
 }
 
 // MARK: - Strike Complete Delegate

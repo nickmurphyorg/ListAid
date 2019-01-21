@@ -11,13 +11,17 @@ import UIKit
 class ListZoomInAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
     
     private let listCellFrame: CGRect
+    private let listNameLabel: UITextField
+    private let addItemsButton: UIButton
     private let animationDuration = 0.5
     private let statusBarHeight = UIApplication.shared.statusBarFrame.height * 0.8
     
-    init(listCellFrame: CGRect) {
+    init(listCellFrame: CGRect, listNameLabel: UITextField, addItemsButton: UIButton) {
         let originFrame = CGRect(x: listCellFrame.minX, y: listCellFrame.minY, width: listCellFrame.width, height: listCellFrame.height + statusBarHeight)
         
         self.listCellFrame = originFrame
+        self.listNameLabel = listNameLabel
+        self.addItemsButton = addItemsButton
     }
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
@@ -26,10 +30,19 @@ class ListZoomInAnimationController: NSObject, UIViewControllerAnimatedTransitio
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         guard let destinationVC = transitionContext.viewController(forKey: .to),
-            let snapShot = destinationVC.view.snapshotView(afterScreenUpdates: true)
+            let addItemsButtonImage = addItemsButton.currentBackgroundImage
             else {
                 return
         }
+        
+        addItemsButton.isHidden = true
+        
+        guard let snapShot = destinationVC.view.snapshotView(afterScreenUpdates: true) else { return }
+        
+        // Create Sudo Add Items Button
+        let sudoAddItemsButton = UIImageView.init(frame: addItemsButton.frame)
+        sudoAddItemsButton.image = addItemsButtonImage
+        sudoAddItemsButton.alpha = 0
         
         let containerView = transitionContext.containerView
         let destinationFrame = transitionContext.finalFrame(for: destinationVC)
@@ -38,16 +51,23 @@ class ListZoomInAnimationController: NSObject, UIViewControllerAnimatedTransitio
         
         containerView.addSubview(destinationVC.view)
         containerView.addSubview(snapShot)
+        containerView.addSubview(sudoAddItemsButton)
         destinationVC.view.isHidden = true
         
         let duration = transitionDuration(using: transitionContext)
         
         UIView.animateKeyframes(withDuration: duration, delay: 0, options: .calculationModeCubic, animations: {
+            UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.0) {
+                self.listNameLabel.alpha = 0
+            }
             UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 1.0) {
+                sudoAddItemsButton.alpha = 1
                 snapShot.frame = destinationFrame
             }
         }, completion: { _ in
+            self.addItemsButton.isHidden = false
             destinationVC.view.isHidden = false
+            sudoAddItemsButton.removeFromSuperview()
             snapShot.removeFromSuperview()
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         })
