@@ -15,7 +15,9 @@ class ListViewController: UIViewController {
     @IBOutlet weak var itemsTableView: UITableView!
     
     var editListDelegate: EditListDelegate?
+    var reorderListDelegate: ReorderListDelegate?
     var zoomInteractionController: ZoomInteractionController?
+    var dragReorderInteractionController: DragReorderInteractionController?
     
     var selectedList = 0
     var selectedListItems = [Item]()
@@ -42,6 +44,7 @@ class ListViewController: UIViewController {
         itemsTableView.bounces = false
         
         zoomInteractionController = ZoomInteractionController(viewController: self, tableView: itemsTableView)
+        dragReorderInteractionController = DragReorderInteractionController(tableView: itemsTableView, reorderListDelegate: self)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -122,6 +125,17 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
         
         return cellOptions
     }
+    
+    func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        let movedItem = selectedListItems[sourceIndexPath.row]
+        
+        selectedListItems.remove(at: sourceIndexPath.row)
+        selectedListItems.insert(movedItem, at: sourceIndexPath.row)
+    }
 }
 
 // MARK: - Gesture Delegate
@@ -152,6 +166,13 @@ extension ListViewController: EditListItemsDelegate {
         selectedListItems = items
         
         itemsTableView.reloadData()
+    }
+}
+
+//MARK: - Reorder List Delegate
+extension ListViewController: ReorderListDelegate {
+    func moveItem(at: Int, to: Int) {
+        selectedListItems.swapAt(at, to)
     }
 }
 

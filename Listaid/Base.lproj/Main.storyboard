@@ -322,7 +322,7 @@
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <prototypes>
-                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="ItemCell" id="KDV-iV-H29" customClass="AddItemTableViewCell" customModule="Listaid" customModuleProvider="target">
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="ItemCell" id="KDV-iV-H29" customClass="AddItemTableViewCell" customModule="Listaid" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="KDV-iV-H29" id="mp1-Pw-Bzw">
@@ -330,14 +330,14 @@
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5A2-aq-MFY">
-                                                            <rect key="frame" x="15" y="11" width="22" height="22"/>
+                                                            <rect key="frame" x="11" y="7" width="30" height="30"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="height" constant="22" id="dTb-Iq-eZ7"/>
-                                                                <constraint firstAttribute="width" constant="22" id="tNo-tB-iI1"/>
+                                                                <constraint firstAttribute="height" constant="30" id="dTb-Iq-eZ7"/>
+                                                                <constraint firstAttribute="width" constant="30" id="tNo-tB-iI1"/>
                                                             </constraints>
                                                             <color key="tintColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                            <state key="normal" backgroundImage="ItemDeselected"/>
-                                                            <state key="selected" backgroundImage="ItemSelected"/>
+                                                            <state key="normal" image="ItemDeselected"/>
+                                                            <state key="selected" image="ItemSelected"/>
                                                             <connections>
                                                                 <action selector="tappedToggleButton:" destination="KDV-iV-H29" eventType="touchUpInside" id="3ic-ss-jxy"/>
                                                             </connections>
@@ -350,9 +350,9 @@
                                                         </label>
                                                     </subviews>
                                                     <constraints>
-                                                        <constraint firstItem="0UU-dI-Z1N" firstAttribute="leading" secondItem="5A2-aq-MFY" secondAttribute="trailing" constant="8" id="B0w-dW-82Y"/>
-                                                        <constraint firstItem="5A2-aq-MFY" firstAttribute="leading" secondItem="mp1-Pw-Bzw" secondAttribute="leading" constant="15" id="EC5-wg-aK7"/>
-                                                        <constraint firstItem="5A2-aq-MFY" firstAttribute="top" secondItem="mp1-Pw-Bzw" secondAttribute="top" constant="11" id="Gc1-cB-O5Q"/>
+                                                        <constraint firstItem="0UU-dI-Z1N" firstAttribute="leading" secondItem="5A2-aq-MFY" secondAttribute="trailing" constant="4" id="B0w-dW-82Y"/>
+                                                        <constraint firstItem="5A2-aq-MFY" firstAttribute="leading" secondItem="mp1-Pw-Bzw" secondAttribute="leading" constant="11" id="EC5-wg-aK7"/>
+                                                        <constraint firstItem="5A2-aq-MFY" firstAttribute="top" secondItem="mp1-Pw-Bzw" secondAttribute="top" constant="7" id="Gc1-cB-O5Q"/>
                                                         <constraint firstAttribute="trailing" secondItem="0UU-dI-Z1N" secondAttribute="trailing" constant="15" id="cf1-hZ-sxG"/>
                                                         <constraint firstItem="0UU-dI-Z1N" firstAttribute="top" secondItem="mp1-Pw-Bzw" secondAttribute="top" constant="12" id="meN-aC-j8i"/>
                                                         <constraint firstAttribute="bottom" secondItem="0UU-dI-Z1N" secondAttribute="bottom" constant="10.5" id="wZO-eC-55T"/>
