@@ -44,7 +44,7 @@ class ListViewController: UIViewController {
         itemsTableView.bounces = false
         
         zoomInteractionController = ZoomInteractionController(viewController: self, tableView: itemsTableView)
-        dragReorderInteractionController = DragReorderInteractionController(tableView: itemsTableView, reorderListDelegate: self)
+        dragReorderInteractionController = DragReorderInteractionController(uiView: itemsTableView, reorderListDelegate: self)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
