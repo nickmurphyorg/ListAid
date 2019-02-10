@@ -25,6 +25,7 @@ class ListViewController: UIViewController {
     private let cellIdentifier = "ItemCell"
     private let addItemsSegue = "PresentAddItems"
     private let strikeStandardWidth: CGFloat = 10
+    let reorderItemsNotificationName = NSNotification.Name("reorderItems")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,8 +44,10 @@ class ListViewController: UIViewController {
         
         itemsTableView.bounces = false
         
+        NotificationCenter.default.addObserver(self, selector: #selector(moveItem(notification:)), name: reorderItemsNotificationName, object: nil)
+        
         zoomInteractionController = ZoomInteractionController(viewController: self, tableView: itemsTableView)
-        //dragReorderInteractionController = DragReorderInteractionController(uiView: itemsTableView, reorderListDelegate: self)
+        dragReorderInteractionController = DragReorderInteractionController(uiView: itemsTableView, notificationCenterName: reorderItemsNotificationName, reorderAxis: ReorderAxis.y, sections: [0])
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -169,14 +172,20 @@ extension ListViewController: EditListItemsDelegate {
     }
 }
 
-//MARK: - Reorder List Delegate
-/*
-extension ListViewController: ReorderListDelegate {
-    func moveItem(at: Int, to: Int) {
-        selectedListItems.swapAt(at, to)
+//MARK: - Reorder List Items
+extension ListViewController {
+    @objc func moveItem(notification: NSNotification) {
+        guard let fromIndex = notification.userInfo?[ReorderArray.fromIndex] as? Int,
+            let toIndex = notification.userInfo?[ReorderArray.toIndex] as? Int else {
+                print("Could not capture indicies for item to move.")
+                
+                return
+        }
+        
+        selectedListItems.swapAt(fromIndex, toIndex)
     }
 }
-*/
+
 //MARK: - Shake To Purge
 extension ListViewController {
     override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
