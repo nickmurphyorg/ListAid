@@ -12,6 +12,8 @@
 		D11B7F88218E1B5D009F1A77 /* ListZoomInAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11B7F87218E1B5D009F1A77 /* ListZoomInAnimationController.swift */; };
 		D11B7F8A218FABB2009F1A77 /* ListZoomOutAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11B7F89218FABB2009F1A77 /* ListZoomOutAnimationController.swift */; };
 		D11B7F8C21976B42009F1A77 /* ZoomInteractionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11B7F8B21976B41009F1A77 /* ZoomInteractionController.swift */; };
+		D123AD1C220F9D65006CB995 /* ReorderArrayNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D123AD1B220F9D65006CB995 /* ReorderArrayNames.swift */; };
+		D123AD1E220FC0B6006CB995 /* ReorderAxis.swift in Sources */ = {isa = PBXBuildFile; fileRef = D123AD1D220FC0B6006CB995 /* ReorderAxis.swift */; };
 		D140862521A0FF4800363E01 /* AlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D140862421A0FF4800363E01 /* AlertController.swift */; };
 		D15E3F5B21D13EF7008EF0EE /* AddItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15E3F5A21D13EF7008EF0EE /* AddItemTableViewCell.swift */; };
 		D15E3F5D21D14A07008EF0EE /* ToggleListedItemDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15E3F5C21D14A07008EF0EE /* ToggleListedItemDelegate.swift */; };
@@ -65,6 +67,8 @@
 		D11B7F87218E1B5D009F1A77 /* ListZoomInAnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListZoomInAnimationController.swift; sourceTree = "<group>"; };
 		D11B7F89218FABB2009F1A77 /* ListZoomOutAnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ListZoomOutAnimationController.swift; path = AnimationControllers/ListZoomOutAnimationController.swift; sourceTree = SOURCE_ROOT; };
 		D11B7F8B21976B41009F1A77 /* ZoomInteractionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ZoomInteractionController.swift; path = ViewControllers/InteractionControllers/ZoomInteractionController.swift; sourceTree = SOURCE_ROOT; };
+		D123AD1B220F9D65006CB995 /* ReorderArrayNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ReorderArrayNames.swift; path = Enumerations/ReorderArrayNames.swift; sourceTree = SOURCE_ROOT; };
+		D123AD1D220FC0B6006CB995 /* ReorderAxis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReorderAxis.swift; sourceTree = "<group>"; };
 		D140862421A0FF4800363E01 /* AlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertController.swift; sourceTree = "<group>"; };
 		D15E3F5A21D13EF7008EF0EE /* AddItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemTableViewCell.swift; sourceTree = "<group>"; };
 		D15E3F5C21D14A07008EF0EE /* ToggleListedItemDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ToggleListedItemDelegate.swift; path = Protocols/ToggleListedItemDelegate.swift; sourceTree = SOURCE_ROOT; };
@@ -146,6 +150,15 @@
 			path = ViewControllers/InteractionControllers;
 			sourceTree = "<group>";
 		};
+		D123AD1F220FC87E006CB995 /* Enumerations */ = {
+			isa = PBXGroup;
+			children = (
+				D123AD1B220F9D65006CB995 /* ReorderArrayNames.swift */,
+				D123AD1D220FC0B6006CB995 /* ReorderAxis.swift */,
+			);
+			path = Enumerations;
+			sourceTree = "<group>";
+		};
 		D1E7B32E2161534300C11416 = {
 			isa = PBXGroup;
 			children = (
@@ -158,6 +171,7 @@
 				D1E7B3742161551700C11416 /* OtherControllers */,
 				D1EBC0512173A9D70050D784 /* Protocols */,
 				D1E7B3772161555600C11416 /* Extensions */,
+				D123AD1F220FC87E006CB995 /* Enumerations */,
 				D1E7B3512161534600C11416 /* ListaidTests */,
 				D1E7B35C2161534600C11416 /* ListaidUITests */,
 				D1E7B3382161534300C11416 /* Products */,
@@ -405,6 +419,7 @@
 				D1EBC04E2173A6170050D784 /* AddItemsViewController.swift in Sources */,
 				D15E3F6121D3FDAE008EF0EE /* ItemTableViewCell.swift in Sources */,
 				D10FEDF721E2821A004B9E5A /* StrikeCompleteDelegate.swift in Sources */,
+				D123AD1C220F9D65006CB995 /* ReorderArrayNames.swift in Sources */,
 				D1847E7722063D9700466BDD /* ReorderListDelegate.swift in Sources */,
 				D1E7B36F2161546A00C11416 /* Item.swift in Sources */,
 				D1E7B33D2161534300C11416 /* ListsViewController.swift in Sources */,
@@ -420,6 +435,7 @@
 				D11B7F8A218FABB2009F1A77 /* ListZoomOutAnimationController.swift in Sources */,
 				D1E7B3432161534300C11416 /* Listaid.xcdatamodeld in Sources */,
 				D1A8E015218508D600F8E36C /* DeleteListDelegate.swift in Sources */,
+				D123AD1E220FC0B6006CB995 /* ReorderAxis.swift in Sources */,
 				D1847E7521F6B75200466BDD /* DragReorderInteractionController.swift in Sources */,
 				D140862521A0FF4800363E01 /* AlertController.swift in Sources */,
 				D184E06F217BD33E00F9726C /* EditListDelegate.swift in Sources */,

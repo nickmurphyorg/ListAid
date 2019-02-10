@@ -44,7 +44,7 @@ class ListViewController: UIViewController {
         itemsTableView.bounces = false
         
         zoomInteractionController = ZoomInteractionController(viewController: self, tableView: itemsTableView)
-        dragReorderInteractionController = DragReorderInteractionController(uiView: itemsTableView, reorderListDelegate: self)
+        //dragReorderInteractionController = DragReorderInteractionController(uiView: itemsTableView, reorderListDelegate: self)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -170,12 +170,13 @@ extension ListViewController: EditListItemsDelegate {
 }
 
 //MARK: - Reorder List Delegate
+/*
 extension ListViewController: ReorderListDelegate {
     func moveItem(at: Int, to: Int) {
         selectedListItems.swapAt(at, to)
     }
 }
-
+*/
 //MARK: - Shake To Purge
 extension ListViewController {
     override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {

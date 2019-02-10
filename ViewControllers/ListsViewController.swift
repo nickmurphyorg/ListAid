@@ -22,12 +22,15 @@ class ListsViewController: UIViewController {
     var editListsMode = false
     var addListMode = false
     
+    var dragReorderInteractionController: DragReorderInteractionController?
+    
     private let listSegueIdentifier = "PresentListView"
     private let listCellIdentifier = "ListCell"
     private let newListCellIdentifier = "NewListCell"
     private let itemCellIdentifier = "ListItemCellSmall"
     private let statusBarHeight = UIApplication.shared.statusBarFrame.height
     let accentColor = UIColor(red: 0.0, green: 0.478, blue: 1.0, alpha: 1.0)
+    let reorderListsNotificationName = NSNotification.Name.init("reorderLists")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,6 +39,10 @@ class ListsViewController: UIViewController {
         
         listWidth = mainView.frame.width * 0.8
         listHeight = (mainView.frame.height * 0.8) - statusBarHeight
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(reorderLists(notification:)), name: reorderListsNotificationName, object: nil)
+        
+        dragReorderInteractionController = DragReorderInteractionController.init(uiView: listCollectionView, notificationCenterName: reorderListsNotificationName, reorderAxis: ReorderAxis.x, sections: [0])
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle{
@@ -113,6 +120,10 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
         UserPreferences.shared.saveSelectedList(index: selectedListIndex)
         
         performSegue(withIdentifier: listSegueIdentifier, sender: nil)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
+        return indexPath.section == 0 ? true : false
     }
 }
 
@@ -239,6 +250,20 @@ extension ListsViewController: EditListDelegate {
         guard let cellToReload = listCollectionView.cellForItem(at: IndexPath(item: selectedListIndex, section: 0)) as? ListCollectionViewCell else { return }
         
         cellToReload.reloadTable()
+    }
+}
+
+//MARK: - Reorder Lists
+extension ListsViewController {
+    @objc func reorderLists(notification: NSNotification) {
+        guard let fromIndex = notification.userInfo?[ReorderArray.fromIndex] as? Int,
+            let toIndex = notification.userInfo?[ReorderArray.toIndex] as? Int else {
+                print("Could not capture indicies from notfication response.")
+                
+                return
+        }
+        
+        lists.swapAt(fromIndex, toIndex)
     }
 }
 

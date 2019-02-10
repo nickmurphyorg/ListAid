@@ -15,11 +15,15 @@ class DragReorderInteractionController {
     var snapShot: UIView?
     
     let uiView: UIView!
-    let reorderListDelegate: ReorderListDelegate!
+    let notificationCenterName: NSNotification.Name!
+    let reorderAxis: ReorderAxis!
+    let sections: [Int]!
     
-    init(uiView: UIView, reorderListDelegate: ReorderListDelegate) {
+    init(uiView: UIView, notificationCenterName: NSNotification.Name, reorderAxis: ReorderAxis, sections: [Int]) {
         self.uiView = uiView
-        self.reorderListDelegate = reorderListDelegate
+        self.notificationCenterName = notificationCenterName
+        self.reorderAxis = reorderAxis
+        self.sections = sections
         
         addGesture(tableView: uiView)
     }
@@ -33,10 +37,16 @@ class DragReorderInteractionController {
     @objc func dragCellView(gestureRecognizer: UILongPressGestureRecognizer) {
         let longGesture = gestureRecognizer
         let pressState = gestureRecognizer.state
-        let locationInTableview = longGesture.location(in: uiView)
+        let locationInView = longGesture.location(in: uiView)
         
-        guard let indexPath = returnIndexPathFor(point: locationInTableview) else {
-            print("Index path could not be retrieved.")
+        guard let indexPath = returnIndexPathFor(point: locationInView) else {
+            print("DragReorderInteractionController - Index path could not be retrieved.")
+            
+            return
+        }
+        
+        guard sections.contains(indexPath.section) else {
+            print("DragReorderInteractionController - Cell is not in an approved section to be moved.")
             
             return
         }
@@ -57,7 +67,13 @@ class DragReorderInteractionController {
                     uiView.addSubview(snapShot)
                     
                     UIView.animate(withDuration: 0.25, animations: {() -> Void in
-                        centerPoint.y = locationInTableview.y
+                        switch self.reorderAxis! {
+                        case .x:
+                            centerPoint.x = locationInView.x
+                        case .y:
+                            centerPoint.y = locationInView.y
+                        }
+                        
                         snapShot.center = centerPoint
                         snapShot.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
                         snapShot.alpha = 1
@@ -69,13 +85,32 @@ class DragReorderInteractionController {
             
             case .changed:
                 guard snapShot != nil else { return }
-                
+
                 var updatedCenter = snapShot!.center
-                updatedCenter.y = locationInTableview.y
+                
+                switch reorderAxis! {
+                case .x:
+                    updatedCenter.x = locationInView.x
+                case .y:
+                    updatedCenter.y = locationInView.y
+                }
+                
                 snapShot!.center = updatedCenter
             
                 if startingIndex != nil && indexPath != startingIndex {
-                    reorderListDelegate.moveItem(at: startingIndex!.row, to: indexPath.row)
+                    // Prevent Cell From Entering Restricted Section
+                    guard sections.contains(indexPath.section) else {
+                        print("DragReorderInteractionController - Cell is out of range.")
+                        
+                        return
+                    }
+                    
+                    let itemIndicies: [AnyHashable: Int] = [
+                        AnyHashable.init(ReorderArray.fromIndex) : startingIndex!.row,
+                        AnyHashable.init(ReorderArray.toIndex) : indexPath.row
+                    ]
+                    
+                    NotificationCenter.default.post(name: notificationCenterName, object: nil, userInfo: itemIndicies)
                     
                     moveCell(atIndexPath: startingIndex!, toIndexPath: indexPath)
                     
@@ -86,7 +121,7 @@ class DragReorderInteractionController {
                 guard startingIndex != nil,
                     snapShot != nil,
                     let animateCell = returnCellFor(indexPath: startingIndex!) else {
-                    print("Table cell could not be found at index path.")
+                    print("DragReorderInteractionController - Cell could not be found at index path.")
                     
                     return
                 }
@@ -111,24 +146,28 @@ class DragReorderInteractionController {
     }
 }
 
+//MARK: - Return Index For Point
 extension DragReorderInteractionController {
     private func returnIndexPathFor(point: CGPoint) -> IndexPath? {
         if uiView.isMember(of: UITableView.self) {
             let tableView = uiView as! UITableView
+            let newIndex = tableView.indexPathForRow(at: point)
         
-            return tableView.indexPathForRow(at: point)
+            return newIndex != nil ? newIndex : startingIndex
         } else if uiView.isMember(of: UICollectionView.self) {
             let collectionView = uiView as! UICollectionView
+            let newIndex = collectionView.indexPathForItem(at: point)
         
-            return collectionView.indexPathForItem(at: point)
+            return newIndex != nil ? newIndex : startingIndex
         } else {
-            print("The view is not a member of UITableView or UICollectionView.")
+            print("DragReorderInteractionController - The view is not a member of UITableView or UICollectionView.")
         
             return nil
         }
     }
 }
 
+//MARK: - Return Cell for Index Path
 extension DragReorderInteractionController {
     func returnCellFor(indexPath: IndexPath) -> UIView? {
         if uiView.isMember(of: UITableView.self) {
@@ -140,13 +179,14 @@ extension DragReorderInteractionController {
             
             return collectionView.cellForItem(at: indexPath)
         } else {
-            print("Cell could not be returned for index path.")
+            print("DragReorderInteractionController - Cell could not be returned for index path.")
             
             return nil
         }
     }
 }
 
+//MARK: - Move Cells
 extension DragReorderInteractionController {
     func moveCell(atIndexPath: IndexPath, toIndexPath: IndexPath) {
         if uiView.isMember(of: UITableView.self) {
@@ -158,7 +198,7 @@ extension DragReorderInteractionController {
             
             collectionView.moveItem(at: atIndexPath, to: toIndexPath)
         } else {
-            print("UIView is not a UITableView or UICollectionView. \n Cannot move cell.")
+            print("DragReorderInteractionController - UIView is not a UITableView or UICollectionView. \n Cannot move cell.")
         }
     }
 }
