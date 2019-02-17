@@ -31,6 +31,8 @@ class ListsViewController: UIViewController {
     private let statusBarHeight = UIApplication.shared.statusBarFrame.height
     let accentColor = UIColor(red: 0.0, green: 0.478, blue: 1.0, alpha: 1.0)
     let reorderListsNotificationName = NSNotification.Name.init("reorderLists")
+    let listsSectionInsets = UIEdgeInsets(top: 0, left: 30, bottom: 0, right: 30)
+    let newListSectionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 30)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -91,13 +93,16 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
         cell.setIndex(index: indexPath.item)
         
         if editListsMode {
-            cell.listNameField.layer.shadowOpacity = 1.0
+            // Editing Lists
+            cell.textFieldUnderline.isHidden = false
             cell.deleteListButton.isHidden = false
         } else if addListMode && indexPath.item + 1 == lists.count {
-            cell.listNameField.layer.shadowOpacity = 1.0
+            // Adding New List
+            cell.textFieldUnderline.isHidden = false
             cell.deleteListButton.isHidden = false
         } else {
-            cell.listNameField.layer.shadowOpacity = 0.0
+            // Finished Editing Lists
+            cell.textFieldUnderline.isHidden = true
             cell.deleteListButton.isHidden = true
         }
         
@@ -132,6 +137,10 @@ extension ListsViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: listWidth, height: listHeight)
     }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return section == 0 ? listsSectionInsets : newListSectionInsets
+    }
 }
 
 //MARK: - Toggle Cell Edit Mode
@@ -157,13 +166,16 @@ extension ListsViewController {
             }
             
             if editListsMode {
-                cell.listNameField.layer.shadowOpacity = 1.0
+                // Editing Lists
+                cell.textFieldUnderline.isHidden = false
                 cell.deleteListButton.isHidden = false
             } else if addListMode && indexPath.item + 1 == lists.count {
-                cell.listNameField.layer.shadowOpacity = 1.0
+                // Adding List
+                cell.textFieldUnderline.isHidden = false
                 cell.deleteListButton.isHidden = false
             } else {
-                cell.listNameField.layer.shadowOpacity = 0.0
+                // Finished Editing Lists
+                cell.textFieldUnderline.isHidden = true
                 cell.deleteListButton.isHidden = true
             }
         }

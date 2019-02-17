@@ -15,15 +15,16 @@ class ListCollectionViewCell: UICollectionViewCell {
     @IBOutlet private weak var listTableView: UITableView!
     
     var deleteList: DeleteListDelegate?
+    var textFieldUnderline: CALayer!
     
-    let underlineColor = UIColor(red: 0.51, green: 0.51, blue: 0.51, alpha: 1.0).cgColor
+    let borderColor = UIColor(ciColor: .clear).cgColor
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
-        listNameField.layer.shadowColor = underlineColor
-        listNameField.layer.shadowOffset = CGSize(width: 0.0, height: 1.0)
-        listNameField.layer.shadowRadius = 0.0
+
+        textFieldUnderline = createUnderlineFor(listNameField, color: .white)
+        listNameField.layer.borderColor = borderColor
+        listNameField.layer.addSublayer(textFieldUnderline)
         
         // Causing Auto-Layout Width Bug
         //listTableView.roundedCorners(corners: [.topLeft, .topRight, .bottomRight, .bottomLeft], radius: 4)
