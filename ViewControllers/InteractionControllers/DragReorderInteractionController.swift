@@ -10,9 +10,10 @@ import Foundation
 import UIKit
 
 class DragReorderInteractionController {
+    var interactionInProgress = false
     
-    var startingIndex: IndexPath?
-    var snapShot: UIView?
+    private var startingIndex: IndexPath?
+    private var snapShot: UIView?
     
     let uiView: UIView!
     let notificationCenterName: NSNotification.Name!
@@ -57,6 +58,7 @@ class DragReorderInteractionController {
                 
                 if let snapShot = pressedCell.snapshotView(afterScreenUpdates: true) {
                     self.snapShot = snapShot
+                    interactionInProgress = true
                     
                     var centerPoint = pressedCell.center
                     startingIndex = indexPath
@@ -140,6 +142,7 @@ class DragReorderInteractionController {
                     
                     self.startingIndex = nil
                     self.snapShot = nil
+                    self.interactionInProgress = false
                 })
                 return
         }

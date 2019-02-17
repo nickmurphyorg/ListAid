@@ -20,7 +20,6 @@
 		D15E3F5F21D3F89C008EF0EE /* ItemSmallTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15E3F5E21D3F89C008EF0EE /* ItemSmallTableViewCell.swift */; };
 		D15E3F6121D3FDAE008EF0EE /* ItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15E3F6021D3FDAE008EF0EE /* ItemTableViewCell.swift */; };
 		D1847E7521F6B75200466BDD /* DragReorderInteractionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1847E7421F6B75200466BDD /* DragReorderInteractionController.swift */; };
-		D1847E7722063D9700466BDD /* ReorderListDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1847E7622063D9700466BDD /* ReorderListDelegate.swift */; };
 		D184E06D2173BB6100F9726C /* UserPreferencesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D184E06C2173BB6000F9726C /* UserPreferencesController.swift */; };
 		D184E06F217BD33E00F9726C /* EditListDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D184E06E217BD33E00F9726C /* EditListDelegate.swift */; };
 		D184E071217BD49A00F9726C /* EditListItemsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D184E070217BD49A00F9726C /* EditListItemsDelegate.swift */; };
@@ -75,7 +74,6 @@
 		D15E3F5E21D3F89C008EF0EE /* ItemSmallTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ItemSmallTableViewCell.swift; path = Cells/ItemSmallTableViewCell.swift; sourceTree = SOURCE_ROOT; };
 		D15E3F6021D3FDAE008EF0EE /* ItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemTableViewCell.swift; sourceTree = "<group>"; };
 		D1847E7421F6B75200466BDD /* DragReorderInteractionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragReorderInteractionController.swift; sourceTree = "<group>"; };
-		D1847E7622063D9700466BDD /* ReorderListDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReorderListDelegate.swift; sourceTree = "<group>"; };
 		D184E06C2173BB6000F9726C /* UserPreferencesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferencesController.swift; sourceTree = "<group>"; };
 		D184E06E217BD33E00F9726C /* EditListDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListDelegate.swift; sourceTree = "<group>"; };
 		D184E070217BD49A00F9726C /* EditListItemsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListItemsDelegate.swift; sourceTree = "<group>"; };
@@ -273,7 +271,6 @@
 			isa = PBXGroup;
 			children = (
 				D10FEDF621E2821A004B9E5A /* StrikeCompleteDelegate.swift */,
-				D1847E7622063D9700466BDD /* ReorderListDelegate.swift */,
 				D184E06E217BD33E00F9726C /* EditListDelegate.swift */,
 				D1A8E014218508D600F8E36C /* DeleteListDelegate.swift */,
 				D184E070217BD49A00F9726C /* EditListItemsDelegate.swift */,
@@ -420,7 +417,6 @@
 				D15E3F6121D3FDAE008EF0EE /* ItemTableViewCell.swift in Sources */,
 				D10FEDF721E2821A004B9E5A /* StrikeCompleteDelegate.swift in Sources */,
 				D123AD1C220F9D65006CB995 /* ReorderArrayNames.swift in Sources */,
-				D1847E7722063D9700466BDD /* ReorderListDelegate.swift in Sources */,
 				D1E7B36F2161546A00C11416 /* Item.swift in Sources */,
 				D1E7B33D2161534300C11416 /* ListsViewController.swift in Sources */,
 				D1E7B37D2165979000C11416 /* NewListCollectionViewCell.swift in Sources */,

@@ -60,11 +60,7 @@ class StrikeInteractionController {
                     shouldCompleteStrike = progress > 0.5
                 }
             
-            case .cancelled:
-                interactionInProgress = false
-                strikeView.frame.size.width = strikeStandardWidth
-            
-            case .ended:
+            default:
                 interactionInProgress = false
                 
                 // Animate the complete strike...
@@ -76,10 +72,7 @@ class StrikeInteractionController {
                     tableViewCell.strikeCompleteDelegate?.completeItem(tableViewCell: tableViewCell)
                 } else {
                     strikeView.frame.size.width = strikeStandardWidth
-                }
-            
-            default:
-                break;
+            }
         }
     }
 }

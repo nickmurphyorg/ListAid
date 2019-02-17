@@ -15,7 +15,6 @@ class ListViewController: UIViewController {
     @IBOutlet weak var itemsTableView: UITableView!
     
     var editListDelegate: EditListDelegate?
-    var reorderListDelegate: ReorderListDelegate?
     var zoomInteractionController: ZoomInteractionController?
     var dragReorderInteractionController: DragReorderInteractionController?
     
@@ -144,10 +143,13 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
 // MARK: - Gesture Delegate
 extension ListViewController: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        // Prevent pull down to close when reordering items.
+        if dragReorderInteractionController?.interactionInProgress ?? false {
+            return false
+        }
+        
         return true
     }
-    
-    //TODO - Need to block pull down gesture when swiping cells...
 }
 
 // MARK: - Strike Complete Delegate
