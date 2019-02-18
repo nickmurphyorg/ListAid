@@ -124,6 +124,12 @@ class ModelController {
         return returnAllLists()
     }
     
+    func reorderList(_ from: Int, _ to: Int) -> [List] {
+        lists.swapAt(from, to)
+        
+        return lists
+    }
+    
     func returnAllItemsInList(atIndex: Int) -> [Item]? {
         guard lists.indices.contains(atIndex) else { return nil }
         

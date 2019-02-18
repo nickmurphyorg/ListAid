@@ -39,8 +39,6 @@ class AddItemsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        selectedListIndex = UserPreferences.shared.returnSavedListIndex()
-        
         let savedListItems = ModelController.shared.returnAllItemsInList(atIndex: selectedListIndex)
         
         if let allListItems = savedListItems {

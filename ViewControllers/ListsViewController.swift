@@ -275,7 +275,7 @@ extension ListsViewController {
                 return
         }
         
-        lists.swapAt(fromIndex, toIndex)
+        lists = ModelController.shared.reorderList(fromIndex, toIndex)
     }
 }
 
@@ -303,7 +303,7 @@ extension ListsViewController {
         switch segue.identifier {
         case listSegueIdentifier:
             let destinationViewController = segue.destination as! ListViewController
-                destinationViewController.selectedList = selectedListIndex
+                destinationViewController.selectedListIndex = selectedListIndex
                 destinationViewController.editListDelegate = self
                 destinationViewController.transitioningDelegate = self
             
