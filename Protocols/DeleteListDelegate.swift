@@ -6,8 +6,8 @@
 //  Copyright © 2018 Nick Murphy. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 protocol DeleteListDelegate {
-    func deleteList(index: Int)
+    func deleteListContaining(_ button: UIButton)
 }

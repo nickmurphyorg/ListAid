@@ -30,18 +30,12 @@ class ListCollectionViewCell: UICollectionViewCell {
         //listTableView.roundedCorners(corners: [.topLeft, .topRight, .bottomRight, .bottomLeft], radius: 4)
     }
     
-    func setIndex(index: Int) {
-        listNameField.tag = index
-        deleteListButton.tag = index
-        listTableView.tag = index
-    }
-    
     @IBAction func returnNameField(_ sender: UITextField) {
         listNameField.resignFirstResponder()
     }
     
     @IBAction func deleteListButton(_ sender: UIButton) {
-        deleteList?.deleteList(index: deleteListButton.tag)
+        deleteList?.deleteListContaining(sender)
     }
 }
 

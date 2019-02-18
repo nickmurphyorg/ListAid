@@ -78,7 +78,6 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
         
         let list = lists[indexPath.item]
         
-        cell.setIndex(index: indexPath.item)
         cell.listNameField.text = list.name
         cell.setNameFieldDelegate(textFieldDelegate: self)
         cell.setDeleteListDelegate(deleteListDelegate: self)
@@ -89,8 +88,6 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? ListCollectionViewCell else { return }
-        
-        cell.setIndex(index: indexPath.item)
         
         if editListsMode {
             // Editing Lists
@@ -189,8 +186,14 @@ extension ListsViewController: UITextFieldDelegate {
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
+        guard let listIndex = listCollectionView.indexOf(textField) else {
+            print("ListsViewController - Could not return index for text field.")
+            
+            return
+        }
+        
         guard textField.hasText else {
-            let savedName = ModelController.shared.returnSavedListName(listIndex: textField.tag)
+            let savedName = ModelController.shared.returnSavedListName(listIndex: listIndex)
             
             if let savedName = savedName {
                 textField.text = savedName
@@ -199,22 +202,29 @@ extension ListsViewController: UITextFieldDelegate {
             return
         }
         
-        guard lists.indices.contains(textField.tag) else { return }
+        guard lists.indices.contains(listIndex) else { return }
         
         addListMode = false
         
-        lists[textField.tag].name = textField.text!
+        lists[listIndex].name = textField.text!
         
-        listCollectionView.reloadItems(at: [IndexPath(item: lists.count - 1, section: 0)])
+        //TODO - Refactor this method to be more specific.
+        listCollectionView.reloadItems(at: [IndexPath(item: listIndex, section: 0)])
         
-        ModelController.shared.updateListName(listIndex: textField.tag, newName: textField.text!)
+        ModelController.shared.updateListName(listIndex: listIndex, newName: textField.text!)
     }
     
 }
 
 //MARK: - Delete List Delegate
 extension ListsViewController: DeleteListDelegate {
-    func deleteList(index: Int) {
+    func deleteListContaining(_ button: UIButton) {
+        guard let index = listCollectionView.indexOf(button) else {
+            print("ListsViewController - Could not return index for delete button.")
+            
+            return
+        }
+        
         let deleteAlert = Alert.newAlert(title: "Are you sure?", message: "You will not be able to recover the list.", hasCancel: true, buttonLabel: "Delete", buttonStyle: .destructive, completion: { [weak self] action in
             self?.addListMode = false
             
@@ -232,15 +242,27 @@ extension ListsViewController: DeleteListDelegate {
 //MARK: - Cell Table View Delegate and Datasource
 extension ListsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return lists[tableView.tag].items.count
+        guard let listIndex = listCollectionView.indexOf(tableView) else {
+            print("ListsViewController - Could not return index of list from table view.")
+            
+            return 0
+        }
+        
+        return lists[listIndex].items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: itemCellIdentifier, for: indexPath) as? ItemSmallTableViewCell else {
-            fatalError("Could not initalize an Item Small Tableview Cell.")
+            fatalError("ListsViewController - Could not initalize an Item Small Tableview Cell.")
         }
         
-        let item = lists[tableView.tag].items[indexPath.row]
+        guard let listIndex = listCollectionView.indexOf(tableView) else {
+            print("ListsViewController - Could not return index of list from table view.")
+            
+            return cell
+        }
+        
+        let item = lists[listIndex].items[indexPath.row]
         
         cell.itemNameLabel.text = item.name
         
@@ -291,6 +313,7 @@ extension ListsViewController {
         listCollectionView.insertItems(at: [newIndex])
         
         let addedList = listCollectionView.cellForItem(at: newIndex) as! ListCollectionViewCell
+        addedList.reloadTable()
         addedList.listNameField.becomeFirstResponder()
         addedList.listNameField.layer.shadowOpacity = 1.0
         addedList.deleteListButton.isHidden = false
