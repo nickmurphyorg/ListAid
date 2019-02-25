@@ -79,6 +79,7 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
         let list = lists[indexPath.item]
         
         cell.listNameField.text = list.name
+        cell.setTableViewIndex(indexPath.item)
         cell.setNameFieldDelegate(textFieldDelegate: self)
         cell.setDeleteListDelegate(deleteListDelegate: self)
         cell.setTableViewDataSourceDelegate(dataSourceDelegate: self)
@@ -103,6 +104,7 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
             cell.deleteListButton.isHidden = true
         }
         
+        cell.setTableViewIndex(indexPath.item)
         cell.reloadTable()
     }
     
@@ -242,27 +244,15 @@ extension ListsViewController: DeleteListDelegate {
 //MARK: - Cell Table View Delegate and Datasource
 extension ListsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let listIndex = listCollectionView.indexOf(tableView) else {
-            print("ListsViewController - Could not return index of list from table view.")
-            
-            return 0
-        }
-        
-        return lists[listIndex].items.count
+        return lists[tableView.tag].items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: itemCellIdentifier, for: indexPath) as? ItemSmallTableViewCell else {
             fatalError("ListsViewController - Could not initalize an Item Small Tableview Cell.")
         }
-        
-        guard let listIndex = listCollectionView.indexOf(tableView) else {
-            print("ListsViewController - Could not return index of list from table view.")
-            
-            return cell
-        }
-        
-        let item = lists[listIndex].items[indexPath.row]
+
+        let item = lists[tableView.tag].items[indexPath.row]
         
         cell.itemNameLabel.text = item.name
         
@@ -313,6 +303,7 @@ extension ListsViewController {
         listCollectionView.insertItems(at: [newIndex])
         
         let addedList = listCollectionView.cellForItem(at: newIndex) as! ListCollectionViewCell
+        addedList.setTableViewIndex(newIndex.item)
         addedList.reloadTable()
         addedList.listNameField.becomeFirstResponder()
         addedList.listNameField.layer.shadowOpacity = 1.0

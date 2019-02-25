@@ -73,6 +73,7 @@
 		D12E1E0F2219DBCC0041E860 /* CreateUnderline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUnderline.swift; sourceTree = "<group>"; };
 		D12E1E11221A601E0041E860 /* IndexOfView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexOfView.swift; sourceTree = "<group>"; };
 		D140862421A0FF4800363E01 /* AlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertController.swift; sourceTree = "<group>"; };
+		D1422F402223316500A5A21A /* Listaid v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Listaid v2.xcdatamodel"; sourceTree = "<group>"; };
 		D15E3F5A21D13EF7008EF0EE /* AddItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemTableViewCell.swift; sourceTree = "<group>"; };
 		D15E3F5C21D14A07008EF0EE /* ToggleListedItemDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ToggleListedItemDelegate.swift; path = Protocols/ToggleListedItemDelegate.swift; sourceTree = SOURCE_ROOT; };
 		D15E3F5E21D3F89C008EF0EE /* ItemSmallTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ItemSmallTableViewCell.swift; path = Cells/ItemSmallTableViewCell.swift; sourceTree = SOURCE_ROOT; };
@@ -780,9 +781,10 @@
 		D1E7B3412161534300C11416 /* Listaid.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				D1422F402223316500A5A21A /* Listaid v2.xcdatamodel */,
 				D1E7B3422161534300C11416 /* Listaid.xcdatamodel */,
 			);
-			currentVersion = D1E7B3422161534300C11416 /* Listaid.xcdatamodel */;
+			currentVersion = D1422F402223316500A5A21A /* Listaid v2.xcdatamodel */;
 			path = Listaid.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

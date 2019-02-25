@@ -63,6 +63,21 @@ class ModelControllerTests: XCTestCase {
         }
     }
     
+    func testSaveListIndex() {
+        let listIndex = 0
+        
+        ModelController.shared.saveListIndex(listIndex)
+        
+        let testList = ModelController.shared.returnFilteredList(atIndex: listIndex)
+        
+        if let testList = testList {
+            XCTAssertTrue(testList.index == listIndex)
+        } else {
+            XCTFail("Test list could not be returned")
+        }
+        
+    }
+    
     func testReturnAllItemsInList() {
         let itemsInList = ModelController.shared.returnAllItemsInList(atIndex: testLists.count-1)
         
@@ -141,10 +156,28 @@ class ModelControllerTests: XCTestCase {
             
             return
         }
-
-        XCTAssertTrue(sampleLists.count < testLists.count)
+ 
+        XCTAssertTrue(sampleLists.count < testLists.count && sampleLists[0].index == 0)
         
         testLists = sampleLists
+    }
+    
+    func testReorderList() {
+        guard testLists.count > 1 else {
+            XCTFail("Not enough lists to reorder the array.")
+            
+            return
+        }
+        
+        let firstListID = testLists[0].id
+        let secondListID = testLists[1].id
+        
+        _ = ModelController.shared.reorderList(0, 1)
+        
+        let savedFirstList = ModelController.shared.returnFilteredList(atIndex: 0)
+        let savedSecondList = ModelController.shared.returnFilteredList(atIndex: 1)
+        
+        XCTAssertTrue(savedFirstList?.id == secondListID && savedSecondList?.id == firstListID)
     }
     
     func testPurgeList() {

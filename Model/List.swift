@@ -11,6 +11,7 @@ import CoreData
 
 struct List: Equatable {
     var id: NSManagedObjectID
+    var index: Int?
     var name: String
     var items: [Item]
 }
@@ -19,6 +20,7 @@ extension List {
     init(drinkEntity: NSManagedObject) {
         let loadedEntity = drinkEntity as! ListObject
         self.id = loadedEntity.objectID
+        self.index = loadedEntity.value(forKey: "index") as? Int ?? nil
         self.name = drinkEntity.value(forKey: "name") as? String ?? ""
         self.items = []
         

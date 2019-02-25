@@ -60,6 +60,10 @@ extension ListCollectionViewCell {
         listTableView.delegate = dataSourceDelegate
     }
     
+    func setTableViewIndex(_ index: Int) {
+        listTableView.tag = index
+    }
+    
     func reloadTable(){
         listTableView.reloadData()
     }

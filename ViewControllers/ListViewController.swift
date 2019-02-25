@@ -184,7 +184,15 @@ extension ListViewController {
                 return
         }
         
-        selectedListItems.swapAt(fromIndex, toIndex)
+        let reorderedList = ModelController.shared.reorderItemInList(listIndex: selectedListIndex, fromIndex, toIndex)
+        
+        if let reorderedList = reorderedList {
+            selectedListItems = reorderedList
+        } else {
+            print("ListViewController - The Model Controller failed to reorder the list.")
+            
+            selectedListItems.swapAt(fromIndex, toIndex)
+        }
     }
 }
 
