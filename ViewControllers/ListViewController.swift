@@ -29,17 +29,8 @@ class ListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let returnedListName = ModelController.shared.returnSavedListName(listIndex: selectedListIndex)
-        let returnedListItems = ModelController.shared.returnFilteredItemsInList(atIndex: selectedListIndex)
-        
-        if returnedListName != nil && returnedListItems != nil {
-            listNameLabel.text = returnedListName!
-            selectedListItems = returnedListItems!
-        } else {
-            let listErrorAlert = Alert.newAlert(title: "Error", message: "There was a problem finding your list.", hasCancel: false, buttonLabel: "Close", buttonStyle: .default, completion: nil)
-            
-            present(listErrorAlert, animated: true)
-        }
+        selectedListItems = ModelController.shared.returnFilteredItemsInList(atIndex: selectedListIndex)
+        listNameLabel.text = ModelController.shared.returnSavedListName(listIndex: selectedListIndex) ?? ""
         
         itemsTableView.bounces = false
         
@@ -131,13 +122,6 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
         return true
     }
-    
-    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        let movedItem = selectedListItems[sourceIndexPath.row]
-        
-        selectedListItems.remove(at: sourceIndexPath.row)
-        selectedListItems.insert(movedItem, at: sourceIndexPath.row)
-    }
 }
 
 // MARK: - Gesture Delegate
@@ -184,15 +168,7 @@ extension ListViewController {
                 return
         }
         
-        let reorderedList = ModelController.shared.reorderItemInList(listIndex: selectedListIndex, fromIndex, toIndex)
-        
-        if let reorderedList = reorderedList {
-            selectedListItems = reorderedList
-        } else {
-            print("ListViewController - The Model Controller failed to reorder the list.")
-            
-            selectedListItems.swapAt(fromIndex, toIndex)
-        }
+        selectedListItems = ModelController.shared.reorderItemIn(list: selectedListIndex, fromIndex, toIndex)
     }
 }
 

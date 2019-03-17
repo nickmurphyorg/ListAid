@@ -49,16 +49,6 @@ class ModelController {
                 return firstList.index! < secondList.index!
             }
             
-            // Set the index for lists that dont have an index (v1 - v2 conversion)
-            for (index, var list) in sortedLists.enumerated() {
-                if list.index != index {
-                    list.index = index
-                    
-                    // Call this method on a background thread...
-                    saveListIndex(index)
-                }
-            }
-            
             lists = sortedLists
             
         } catch let error as NSError {
@@ -67,13 +57,12 @@ class ModelController {
     }
     
     func returnAllLists() -> [List] {
-        var filteredLists: [List] = []
+        var filteredLists = [List]()
         
-        for list in lists {
-            var listObject = list
-            listObject.items = list.items.filter { $0.listed == true }
+        for (index, var list) in lists.enumerated() {
+            list.items = returnFilteredItemsInList(atIndex: index)
             
-            filteredLists.append(listObject)
+            filteredLists.append(list)
         }
         
         return filteredLists
@@ -83,8 +72,7 @@ class ModelController {
         guard lists.indices.contains(atIndex) else { return nil }
         
         var savedList = lists[atIndex]
-        savedList.items = savedList.items.filter { $0.listed == true }
-        // Sort items by index...
+        savedList.items = returnFilteredItemsInList(atIndex: atIndex)
         
         return savedList
     }
@@ -147,7 +135,6 @@ class ModelController {
             for index in listIndex..<lists.count {
                 lists[index].index = index
                 
-                //Perform on background thread
                 saveListIndex(index)
             }
             
@@ -164,7 +151,6 @@ class ModelController {
         lists[from].index = to
         lists[to].index = from
         
-        // On a background thread in the dispatch queue...
         saveListIndex(from)
         saveListIndex(to)
         
@@ -177,6 +163,7 @@ class ModelController {
         let list = managedContext!.object(with: lists[index].id) as! ListObject
         list.index = Int16(index)
         
+        // On a background thread in the dispatch queue...
         do {
             try managedContext?.save()
         } catch let error as NSError {
@@ -190,11 +177,14 @@ class ModelController {
         return lists[atIndex].items
     }
     
-    func returnFilteredItemsInList(atIndex: Int) -> [Item]? {
-        guard lists.indices.contains(atIndex) else { return nil }
+    func returnFilteredItemsInList(atIndex: Int) -> [Item] {
+        guard lists.indices.contains(atIndex) else {
+            return []
+        }
         
-        let filteredItemList = lists[atIndex].items.filter { $0.listed == true }
-        // sort the list by index...
+        var filteredItemList = lists[atIndex].items.filter { $0.listed == true }
+        filteredItemList = sortItemsByIndex(filteredItemList)
+        
         return filteredItemList
     }
     
@@ -241,7 +231,7 @@ class ModelController {
             try managedContext?.save()
             
             lists[listIndex].items.remove(at: itemIndex)
-            // Update index property for all items after if index != nil
+
             print("Item was deleted.")
         } catch let error as NSError {
             print("Item could not be deleted. Error: \(error)")
@@ -278,7 +268,6 @@ class ModelController {
         guard managedContext != nil && lists.indices.contains(listIndex) else { return }
         
         let itemEntity = managedContext!.object(with: itemID) as! ItemObject
-        // .index = listed ? int : nil
         itemEntity.listed.toggle()
         itemEntity.completed = false
         
@@ -287,10 +276,9 @@ class ModelController {
             
             for (index, item) in lists[listIndex].items.enumerated() {
                 if item.id === itemID {
-                    // if item listed drop decrement index of following items...
                     lists[listIndex].items[index].listed.toggle()
+                    lists[listIndex].items[index].completed = false
                     
-                    // if item not listed return list count and set index...
                     break
                 }
             }
@@ -324,17 +312,25 @@ class ModelController {
         }
     }
     
-    func reorderItemInList(listIndex: Int, _ fromIndex: Int, _ toIndex: Int) -> [Item]? {
-        // This will be refactored when persistent ordering is built...
-        var listItems: [Item]?
+    func reorderItemIn(list: Int, _ fromIndex: Int, _ toIndex: Int) -> [Item] {
+        let listItems = returnFilteredItemsInList(atIndex: list)
+        let itemToMove = listItems[fromIndex].id
+        let itemToBump = listItems[toIndex].id
         
-        if var items = returnFilteredItemsInList(atIndex: listIndex) {
-            items.swapAt(fromIndex, toIndex)
-            // save index on background thread...
-            listItems = items
+        updateItem(itemToMove, index: toIndex)
+        updateItem(itemToBump, index: fromIndex)
+        
+        for (index, item) in lists[list].items.enumerated() {
+            if item.id == itemToMove {
+                lists[list].items[index].index = toIndex
+            } else if item.id == itemToBump {
+                lists[list].items[index].index = fromIndex
+            }
         }
         
-        return listItems
+        let updatedListItems = returnFilteredItemsInList(atIndex: list)
+        
+        return updatedListItems
     }
     
     func purgeCompletedItems(listIndex: Int) -> List? {
@@ -346,7 +342,7 @@ class ModelController {
             if item.completed && item.listed {
                 let itemToPurge = managedContext!.object(with: item.id) as! ItemObject
                 itemToPurge.completed.toggle()
-                // .index = nil
+                itemToPurge.index = -1
                 itemToPurge.listed.toggle()
                 
                 editedItemIndicies.append(index)
@@ -358,7 +354,7 @@ class ModelController {
             
             for index in editedItemIndicies {
                 lists[listIndex].items[index].completed.toggle()
-                // null index property...
+                lists[listIndex].items[index].index = nil
                 lists[listIndex].items[index].listed.toggle()
             }
             
@@ -368,5 +364,32 @@ class ModelController {
         }
         
         return returnFilteredList(atIndex: listIndex)
+    }
+}
+
+//MARK: - Helper Methods
+extension ModelController {
+    private func sortItemsByIndex(_ items: [Item]) -> [Item] {
+        let sortedItems = items.sorted { (firstItem, secondItem) -> Bool in
+            guard firstItem.index != nil && secondItem.index != nil else { return false }
+            
+            return firstItem.index! < secondItem.index!
+        }
+        
+        return sortedItems
+    }
+    
+    private func updateItem(_ itemID: NSManagedObjectID, index: Int) {
+        guard managedContext != nil else { return }
+        
+        let itemToUpdate = managedContext?.object(with: itemID) as! ItemObject
+        itemToUpdate.index = Int16(index)
+        
+        // Perform on background thread...
+        do {
+            try managedContext?.save()
+        } catch let error as NSError {
+            print("There was a problem updating the item's index: \(error)")
+        }
     }
 }

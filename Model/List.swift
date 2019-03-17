@@ -19,9 +19,11 @@ struct List: Equatable {
 extension List {
     init(drinkEntity: NSManagedObject) {
         let loadedEntity = drinkEntity as! ListObject
+        let entityIndex = Int(loadedEntity.index)
+        
         self.id = loadedEntity.objectID
-        self.index = loadedEntity.value(forKey: "index") as? Int ?? nil
-        self.name = drinkEntity.value(forKey: "name") as? String ?? ""
+        self.index = entityIndex >= 0 ? entityIndex : nil
+        self.name = loadedEntity.name ?? ""
         self.items = []
         
         if loadedEntity.items != nil {

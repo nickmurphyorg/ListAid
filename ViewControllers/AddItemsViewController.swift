@@ -260,7 +260,7 @@ extension AddItemsViewController {
     }
     
     @IBAction func finishAddItems(_ sender: UIBarButtonItem) {
-        let listedItems = selectedListItems.filter { $0.listed == true }
+        let listedItems = ModelController.shared.returnFilteredItemsInList(atIndex: selectedListIndex)
         
         editListItemsDelegate?.editItems(items: listedItems)
         

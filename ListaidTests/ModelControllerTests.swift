@@ -21,6 +21,7 @@ class ModelControllerTests: XCTestCase {
     override func setUp() {
         testLists = ModelController.shared.addNewList()
         testItemList = ModelController.shared.addItemToList(listIndex: testLists.count - 1, itemName: testItemName)
+        testItemList = ModelController.shared.addItemToList(listIndex: testLists.count - 1, itemName: testItemRename)
     }
 
     override func tearDown() {
@@ -64,7 +65,7 @@ class ModelControllerTests: XCTestCase {
     }
     
     func testSaveListIndex() {
-        let listIndex = 0
+        let listIndex = testLists.count - 1
         
         ModelController.shared.saveListIndex(listIndex)
         
@@ -178,6 +179,38 @@ class ModelControllerTests: XCTestCase {
         let savedSecondList = ModelController.shared.returnFilteredList(atIndex: 1)
         
         XCTAssertTrue(savedFirstList?.id == secondListID && savedSecondList?.id == firstListID)
+    }
+    
+    func testReorderItemInList() {
+        let lastListIndex = testLists.count - 1
+        
+        guard let lastListItems = ModelController.shared.returnAllItemsInList(atIndex: lastListIndex) else {
+            XCTFail("Could not return all list items.")
+            
+            return
+        }
+        
+        for item in lastListItems {
+            ModelController.shared.toggleItemListStatus(listIndex: lastListIndex, itemID: item.id)
+        }
+        
+        let listItems = ModelController.shared.returnFilteredItemsInList(atIndex: lastListIndex)
+        
+        guard listItems.count > 1 else {
+            XCTFail("Not enough items to test reorder.")
+            
+            return
+        }
+        
+        let itemOneID = listItems[0].id
+        let itemTwoID = listItems[1].id
+        
+        let updatedItemList = ModelController.shared.reorderItemIn(list: lastListIndex, 0, 1)
+        
+        XCTAssertEqual(updatedItemList[0].id, itemTwoID)
+        XCTAssertEqual(updatedItemList[0].index, 0)
+        XCTAssertEqual(updatedItemList[1].id, itemOneID)
+        XCTAssertEqual(updatedItemList[1].index, 1)
     }
     
     func testPurgeList() {

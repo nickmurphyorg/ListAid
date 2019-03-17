@@ -19,10 +19,13 @@ struct Item: Equatable {
 
 extension Item {
     init(itemEntity: NSManagedObject) {
+        let loadedEntity = itemEntity as! ItemObject
+        let entityIndex = Int(loadedEntity.index)
+        
         self.id = itemEntity.objectID
-        self.index = itemEntity.value(forKey: "index") as? Int ?? nil
-        self.name = itemEntity.value(forKey: "name") as? String ?? ""
-        self.listed = itemEntity.value(forKey: "listed") as? Bool ?? false
-        self.completed = itemEntity.value(forKey: "completed") as? Bool ?? false
+        self.index = entityIndex >= 0 ? entityIndex : nil
+        self.name = loadedEntity.name ?? ""
+        self.listed = loadedEntity.listed
+        self.completed = loadedEntity.completed
     }
 }
