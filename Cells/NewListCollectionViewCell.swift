@@ -12,8 +12,11 @@ class NewListCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var listView: UIView!
     
+    let listStyleMetrics = ListStyleMetric()
+    
     override func awakeFromNib() {
         listView.layer.borderWidth = 2
         listView.layer.borderColor = UIColor.white.cgColor
+        listView.layer.cornerRadius = listStyleMetrics.cornerRadius
     }
 }

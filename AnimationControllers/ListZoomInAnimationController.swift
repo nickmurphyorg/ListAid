@@ -14,9 +14,12 @@ class ListZoomInAnimationController: NSObject, UIViewControllerAnimatedTransitio
     private let listNameLabel: UITextField
     private let addItemsButton: UIButton
     private let animationDuration = 0.5
-    private let statusBarHeight = UIApplication.shared.statusBarFrame.height * 0.8
+    private let listStyleMetrics = ListStyleMetric()
+    private let statusBarHeight: CGFloat!
     
     init(listCellFrame: CGRect, listNameLabel: UITextField, addItemsButton: UIButton) {
+        statusBarHeight = UIApplication.shared.statusBarFrame.height * listStyleMetrics.scaleFactor
+        
         let originFrame = CGRect(x: listCellFrame.minX, y: listCellFrame.minY, width: listCellFrame.width, height: listCellFrame.height + statusBarHeight)
         
         self.listCellFrame = originFrame

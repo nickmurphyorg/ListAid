@@ -27,20 +27,21 @@ class ListsViewController: UIViewController {
     private let listSegueIdentifier = "PresentListView"
     private let listCellIdentifier = "ListCell"
     private let newListCellIdentifier = "NewListCell"
-    private let itemCellIdentifier = "ListItemCellSmall"
+    private let itemCellIdentifier = "ItemCell"
     private let statusBarHeight = UIApplication.shared.statusBarFrame.height
-    let accentColor = UIColor(red: 0.0, green: 0.478, blue: 1.0, alpha: 1.0)
-    let reorderListsNotificationName = NSNotification.Name.init("reorderLists")
-    let listsSectionInsets = UIEdgeInsets(top: 0, left: 30, bottom: 0, right: 30)
-    let newListSectionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 30)
+    private let accentColor = UIColor(red: 0.0, green: 0.478, blue: 1.0, alpha: 1.0)
+    private let reorderListsNotificationName = NSNotification.Name.init("reorderLists")
+    private let listsSectionInsets = UIEdgeInsets(top: 0, left: 30, bottom: 0, right: 30)
+    private let newListSectionInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 30)
+    private let listStyleMetrics = ListStyleMetric()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         lists = ModelController.shared.returnAllLists()
         
-        listWidth = mainView.frame.width * 0.8
-        listHeight = (mainView.frame.height * 0.8) - statusBarHeight
+        listWidth = mainView.frame.width * listStyleMetrics.scaleFactor
+        listHeight = (mainView.frame.height * listStyleMetrics.scaleFactor) - statusBarHeight
         
         NotificationCenter.default.addObserver(self, selector: #selector(reorderLists(notification:)), name: reorderListsNotificationName, object: nil)
         
@@ -248,7 +249,7 @@ extension ListsViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: itemCellIdentifier, for: indexPath) as? ItemSmallTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: itemCellIdentifier, for: indexPath) as? ItemTableViewCell else {
             fatalError("ListsViewController - Could not initalize an Item Small Tableview Cell.")
         }
 
@@ -256,11 +257,11 @@ extension ListsViewController: UITableViewDelegate, UITableViewDataSource {
         
         cell.itemNameLabel.text = item.name
         
-        let labelWidth = cell.itemNameLabel.intrinsicContentSize.width + 22
-        let strikeWidth = item.completed ? labelWidth : 8
+        let completeStrikeWidth = cell.itemNameLabel.intrinsicContentSize.width + 28
         
-        cell.strikeThrough.frame.size.width = strikeWidth
-        cell.contentView.addSubview(cell.strikeThrough)
+        if item.completed {
+            cell.strikeThroughWidthConstraint.constant = completeStrikeWidth
+        }
         
         return cell
     }

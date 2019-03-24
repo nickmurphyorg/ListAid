@@ -10,8 +10,10 @@ import UIKit
 
 class ItemTableViewCell: UITableViewCell {
     @IBOutlet weak var itemNameLabel: UILabel!
+    @IBOutlet weak var strikeThrough: UIView!
+    @IBOutlet weak var strikeThroughWidthConstraint: NSLayoutConstraint!
     
-    let strikeThrough = UIView(frame: CGRect(x: 12, y: 21, width: 10, height: 3))
+    let listStyleMetrics = ListStyleMetric()
     
     var strikeCompleteDelegate: StrikeCompleteDelegate?
     var strikeInteractionController: StrikeInteractionController?
@@ -19,7 +21,7 @@ class ItemTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        strikeThrough.backgroundColor = .black
+        strikeThrough.layer.cornerRadius = listStyleMetrics.strikeCornerRadius
     }
 }
 

@@ -11,23 +11,27 @@ import UIKit
 class ListCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var listNameField: UITextField!
+    @IBOutlet weak var textFieldUnderline: UIView!
     @IBOutlet weak var deleteListButton: UIButton!
     @IBOutlet private weak var listTableView: UITableView!
     
     var deleteList: DeleteListDelegate?
-    var textFieldUnderline: CALayer!
     
-    let borderColor = UIColor(ciColor: .clear).cgColor
+    let screenDimensions = UIScreen.main.bounds
+    let statusBarHeight = UIApplication.shared.statusBarFrame.height
+    let listStyleMetrics = ListStyleMetric()
     
     override func awakeFromNib() {
         super.awakeFromNib()
-
-        textFieldUnderline = createUnderlineFor(listNameField, color: .white)
-        listNameField.layer.borderColor = borderColor
-        listNameField.layer.addSublayer(textFieldUnderline)
         
-        // Causing Auto-Layout Width Bug
-        //listTableView.roundedCorners(corners: [.topLeft, .topRight, .bottomRight, .bottomLeft], radius: 4)
+        // Scale Cell Layers For Zoom Animation
+        self.contentView.frame.size.width = screenDimensions.width
+        self.contentView.frame.size.height = screenDimensions.height - statusBarHeight
+        self.contentView.transform = CGAffineTransform(scaleX: listStyleMetrics.scaleFactor, y: listStyleMetrics.scaleFactor)
+        
+        listTableView.translatesAutoresizingMaskIntoConstraints = false
+        listTableView.rowHeight = hasEdgeToEdgeScreen() ? 43.3333 : 43.6666
+        listTableView.layer.cornerRadius = listStyleMetrics.cornerRadius
     }
     
     @IBAction func returnNameField(_ sender: UITextField) {

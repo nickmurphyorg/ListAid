@@ -12,6 +12,7 @@ class ListViewController: UIViewController {
     
     @IBOutlet weak var listNameLabel: UILabel!
     @IBOutlet weak var addItemsButton: UIButton!
+    @IBOutlet weak var listBackground: UIView!
     @IBOutlet weak var itemsTableView: UITableView!
     
     var editListDelegate: EditListDelegate?
@@ -23,8 +24,8 @@ class ListViewController: UIViewController {
     
     private let cellIdentifier = "ItemCell"
     private let addItemsSegue = "PresentAddItems"
-    private let strikeStandardWidth: CGFloat = 10
     let reorderItemsNotificationName = NSNotification.Name("reorderItems")
+    let listStyleMetrics = ListStyleMetric()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,6 +33,7 @@ class ListViewController: UIViewController {
         selectedListItems = ModelController.shared.returnFilteredItemsInList(atIndex: selectedListIndex)
         listNameLabel.text = ModelController.shared.returnSavedListName(listIndex: selectedListIndex) ?? ""
         
+        listBackground.layer.cornerRadius = listStyleMetrics.cornerRadius
         itemsTableView.bounces = false
         
         NotificationCenter.default.addObserver(self, selector: #selector(moveItem(notification:)), name: reorderItemsNotificationName, object: nil)
@@ -69,13 +71,13 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
         cell.itemNameLabel.text = itemData.name
         
         let completeStrikeWidth = cell.itemNameLabel.intrinsicContentSize.width + 28
-        let strikeWidth = itemData.completed ? completeStrikeWidth : strikeStandardWidth
         
-        cell.strikeThrough.frame.size.width = strikeWidth
-        cell.contentView.addSubview(cell.strikeThrough)
+        if itemData.completed {
+            cell.strikeThroughWidthConstraint.constant = completeStrikeWidth
+        }
         
         cell.strikeCompleteDelegate = self
-        cell.strikeInteractionController = StrikeInteractionController.init(tableCell: cell, strikeStandardWidth: strikeStandardWidth, strikeCompleteWidth: completeStrikeWidth)
+        cell.strikeInteractionController = StrikeInteractionController.init(tableCell: cell, strikeStandardWidth: listStyleMetrics.strikeWidth, strikeCompleteWidth: completeStrikeWidth)
         
         return cell
     }
@@ -104,7 +106,7 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
             let listIndex = weakSelf.selectedListIndex
             
             UIView.animate(withDuration: 1) {
-                editingCell.strikeThrough.frame.size.width = weakSelf.strikeStandardWidth
+                editingCell.strikeThrough.frame.size.width = weakSelf.listStyleMetrics.strikeWidth
             }
             
             weakSelf.selectedListItems[indexPath.row].completed.toggle()

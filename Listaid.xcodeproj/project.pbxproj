@@ -19,13 +19,14 @@
 		D140862521A0FF4800363E01 /* AlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D140862421A0FF4800363E01 /* AlertController.swift */; };
 		D15E3F5B21D13EF7008EF0EE /* AddItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15E3F5A21D13EF7008EF0EE /* AddItemTableViewCell.swift */; };
 		D15E3F5D21D14A07008EF0EE /* ToggleListedItemDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15E3F5C21D14A07008EF0EE /* ToggleListedItemDelegate.swift */; };
-		D15E3F5F21D3F89C008EF0EE /* ItemSmallTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15E3F5E21D3F89C008EF0EE /* ItemSmallTableViewCell.swift */; };
 		D15E3F6121D3FDAE008EF0EE /* ItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15E3F6021D3FDAE008EF0EE /* ItemTableViewCell.swift */; };
 		D1847E7521F6B75200466BDD /* DragReorderInteractionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1847E7421F6B75200466BDD /* DragReorderInteractionController.swift */; };
 		D184E06D2173BB6100F9726C /* UserPreferencesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D184E06C2173BB6000F9726C /* UserPreferencesController.swift */; };
 		D184E06F217BD33E00F9726C /* EditListDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D184E06E217BD33E00F9726C /* EditListDelegate.swift */; };
 		D184E071217BD49A00F9726C /* EditListItemsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D184E070217BD49A00F9726C /* EditListItemsDelegate.swift */; };
 		D1A8E015218508D600F8E36C /* DeleteListDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A8E014218508D600F8E36C /* DeleteListDelegate.swift */; };
+		D1B08ACD22454EEC0053DFDD /* HasEdgeToEdgeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B08ACC22454EEC0053DFDD /* HasEdgeToEdgeScreen.swift */; };
+		D1B08ACF224561EA0053DFDD /* ListStyleMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B08ACE224561EA0053DFDD /* ListStyleMetrics.swift */; };
 		D1B9B721216AB4E20037B0D4 /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B9B720216AB4E20037B0D4 /* ListViewController.swift */; };
 		D1E7B33B2161534300C11416 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E7B33A2161534300C11416 /* AppDelegate.swift */; };
 		D1E7B33D2161534300C11416 /* ListsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E7B33C2161534300C11416 /* ListsViewController.swift */; };
@@ -76,13 +77,14 @@
 		D1422F402223316500A5A21A /* Listaid v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Listaid v2.xcdatamodel"; sourceTree = "<group>"; };
 		D15E3F5A21D13EF7008EF0EE /* AddItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemTableViewCell.swift; sourceTree = "<group>"; };
 		D15E3F5C21D14A07008EF0EE /* ToggleListedItemDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ToggleListedItemDelegate.swift; path = Protocols/ToggleListedItemDelegate.swift; sourceTree = SOURCE_ROOT; };
-		D15E3F5E21D3F89C008EF0EE /* ItemSmallTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ItemSmallTableViewCell.swift; path = Cells/ItemSmallTableViewCell.swift; sourceTree = SOURCE_ROOT; };
 		D15E3F6021D3FDAE008EF0EE /* ItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemTableViewCell.swift; sourceTree = "<group>"; };
 		D1847E7421F6B75200466BDD /* DragReorderInteractionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragReorderInteractionController.swift; sourceTree = "<group>"; };
 		D184E06C2173BB6000F9726C /* UserPreferencesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferencesController.swift; sourceTree = "<group>"; };
 		D184E06E217BD33E00F9726C /* EditListDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListDelegate.swift; sourceTree = "<group>"; };
 		D184E070217BD49A00F9726C /* EditListItemsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListItemsDelegate.swift; sourceTree = "<group>"; };
 		D1A8E014218508D600F8E36C /* DeleteListDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteListDelegate.swift; sourceTree = "<group>"; };
+		D1B08ACC22454EEC0053DFDD /* HasEdgeToEdgeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HasEdgeToEdgeScreen.swift; sourceTree = "<group>"; };
+		D1B08ACE224561EA0053DFDD /* ListStyleMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListStyleMetrics.swift; sourceTree = "<group>"; };
 		D1B9B720216AB4E20037B0D4 /* ListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ListViewController.swift; path = ViewControllers/ListViewController.swift; sourceTree = SOURCE_ROOT; };
 		D1E7B3372161534300C11416 /* Listaid.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Listaid.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1E7B33A2161534300C11416 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -162,6 +164,14 @@
 			path = Enumerations;
 			sourceTree = "<group>";
 		};
+		D1B08AD02245697B0053DFDD /* Structures */ = {
+			isa = PBXGroup;
+			children = (
+				D1B08ACE224561EA0053DFDD /* ListStyleMetrics.swift */,
+			);
+			path = Structures;
+			sourceTree = "<group>";
+		};
 		D1E7B32E2161534300C11416 = {
 			isa = PBXGroup;
 			children = (
@@ -175,6 +185,7 @@
 				D1EBC0512173A9D70050D784 /* Protocols */,
 				D1E7B3772161555600C11416 /* Extensions */,
 				D123AD1F220FC87E006CB995 /* Enumerations */,
+				D1B08AD02245697B0053DFDD /* Structures */,
 				D1E7B3512161534600C11416 /* ListaidTests */,
 				D1E7B35C2161534600C11416 /* ListaidUITests */,
 				D1E7B3382161534300C11416 /* Products */,
@@ -248,7 +259,6 @@
 				D1E7B371216154BC00C11416 /* ListCollectionViewCell.swift */,
 				D1E7B37C2165979000C11416 /* NewListCollectionViewCell.swift */,
 				D15E3F5A21D13EF7008EF0EE /* AddItemTableViewCell.swift */,
-				D15E3F5E21D3F89C008EF0EE /* ItemSmallTableViewCell.swift */,
 				D15E3F6021D3FDAE008EF0EE /* ItemTableViewCell.swift */,
 			);
 			path = Cells;
@@ -270,6 +280,7 @@
 				D1E7B3782161556F00C11416 /* RoundedCorners.swift */,
 				D12E1E0F2219DBCC0041E860 /* CreateUnderline.swift */,
 				D12E1E11221A601E0041E860 /* IndexOfView.swift */,
+				D1B08ACC22454EEC0053DFDD /* HasEdgeToEdgeScreen.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -438,6 +449,7 @@
 				D1E7B33B2161534300C11416 /* AppDelegate.swift in Sources */,
 				D1E7B3762161553200C11416 /* ModelController.swift in Sources */,
 				D11B7F8A218FABB2009F1A77 /* ListZoomOutAnimationController.swift in Sources */,
+				D1B08ACF224561EA0053DFDD /* ListStyleMetrics.swift in Sources */,
 				D1E7B3432161534300C11416 /* Listaid.xcdatamodeld in Sources */,
 				D1A8E015218508D600F8E36C /* DeleteListDelegate.swift in Sources */,
 				D123AD1E220FC0B6006CB995 /* ReorderAxis.swift in Sources */,
@@ -445,8 +457,8 @@
 				D140862521A0FF4800363E01 /* AlertController.swift in Sources */,
 				D184E06F217BD33E00F9726C /* EditListDelegate.swift in Sources */,
 				D11B7F88218E1B5D009F1A77 /* ListZoomInAnimationController.swift in Sources */,
-				D15E3F5F21D3F89C008EF0EE /* ItemSmallTableViewCell.swift in Sources */,
 				D1E7B37B216155CF00C11416 /* SettingsViewController.swift in Sources */,
+				D1B08ACD22454EEC0053DFDD /* HasEdgeToEdgeScreen.swift in Sources */,
 				D10FEDF521DD9DA4004B9E5A /* StrikeInteractionController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
