@@ -111,7 +111,7 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // Disable while adding a new list
-        guard !addListMode else { return }
+        guard !addListMode && !editListsMode else { return }
         
         // Check if it's new list card
         guard indexPath.section == 0 else {

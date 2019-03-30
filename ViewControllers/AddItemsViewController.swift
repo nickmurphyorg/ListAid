@@ -26,15 +26,7 @@ class AddItemsViewController: UIViewController {
     private let addItemsTitle = "Add Items"
     private let editItemTitle = "Edit Item"
     private let cellIdentifier = "ItemCell"
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        navigationView.layer.shadowColor = UIColor.black.cgColor
-        navigationView.layer.shadowOpacity = 0.3
-        navigationView.layer.shadowRadius = 0
-        navigationView.layer.shadowOffset = CGSize(width: 0, height: 0.5)
-    }
+    private let listStyleMetrics = ListStyleMetric()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,6 +38,17 @@ class AddItemsViewController: UIViewController {
         }
         
         itemsTableView.contentInset.top = navigationView.bounds.height
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        backgroundView.roundedCorners(corners: [.topLeft, .topRight], radius: listStyleMetrics.cornerRadius)
+        
+        navigationView.layer.shadowColor = UIColor.black.cgColor
+        navigationView.layer.shadowOpacity = 0.3
+        navigationView.layer.shadowRadius = 0
+        navigationView.layer.shadowOffset = CGSize(width: 0, height: 0.5)
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle{

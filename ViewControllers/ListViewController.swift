@@ -24,8 +24,8 @@ class ListViewController: UIViewController {
     
     private let cellIdentifier = "ItemCell"
     private let addItemsSegue = "PresentAddItems"
-    let reorderItemsNotificationName = NSNotification.Name("reorderItems")
-    let listStyleMetrics = ListStyleMetric()
+    private let reorderItemsNotificationName = NSNotification.Name("reorderItems")
+    private let listStyleMetrics = ListStyleMetric()
     
     override func viewDidLoad() {
         super.viewDidLoad()

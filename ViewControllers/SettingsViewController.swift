@@ -14,8 +14,18 @@ class SettingsViewController: UIViewController {
     @IBOutlet weak var settingsBackground: UIView!
     @IBOutlet weak var settingsTableView: UITableView!
     
+    private let listStyleMetrics = ListStyleMetric()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        settingsTableView.contentInset.top = settingsNavigationBar.bounds.height
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        settingsBackground.roundedCorners(corners: [.topLeft, .topRight], radius: listStyleMetrics.cornerRadius)
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle{

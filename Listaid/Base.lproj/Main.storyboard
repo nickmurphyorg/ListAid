@@ -522,37 +522,37 @@
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </tableView>
+                                    <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FqL-wW-5Tf">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                        <items>
+                                            <navigationItem title="Settings" id="jL7-iX-YAQ">
+                                                <barButtonItem key="rightBarButtonItem" title="Done" id="8Fg-C4-avo">
+                                                    <color key="tintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <connections>
+                                                        <action selector="dismissSettings:" destination="eME-PV-40L" id="6V5-Db-AJw"/>
+                                                    </connections>
+                                                </barButtonItem>
+                                            </navigationItem>
+                                        </items>
+                                    </navigationBar>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="vbX-Hp-rnd" secondAttribute="trailing" id="4cf-Qq-vbY"/>
                                     <constraint firstItem="vbX-Hp-rnd" firstAttribute="leading" secondItem="QxJ-XP-gTT" secondAttribute="leading" id="9b2-Zc-PDd"/>
+                                    <constraint firstItem="FqL-wW-5Tf" firstAttribute="top" secondItem="QxJ-XP-gTT" secondAttribute="top" id="Jz2-6Z-ADN"/>
+                                    <constraint firstAttribute="trailing" secondItem="FqL-wW-5Tf" secondAttribute="trailing" id="N3x-IY-HCq"/>
                                     <constraint firstAttribute="bottom" secondItem="vbX-Hp-rnd" secondAttribute="bottom" id="PHJ-XY-hfo"/>
                                     <constraint firstItem="vbX-Hp-rnd" firstAttribute="top" secondItem="QxJ-XP-gTT" secondAttribute="top" id="TUb-eV-NGX"/>
+                                    <constraint firstItem="FqL-wW-5Tf" firstAttribute="leading" secondItem="QxJ-XP-gTT" secondAttribute="leading" id="dm7-8V-AOU"/>
                                 </constraints>
                             </view>
-                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FqL-wW-5Tf">
-                                <rect key="frame" x="0.0" y="20" width="375" height="44"/>
-                                <items>
-                                    <navigationItem title="Settings" id="jL7-iX-YAQ">
-                                        <barButtonItem key="rightBarButtonItem" title="Done" id="8Fg-C4-avo">
-                                            <color key="tintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <connections>
-                                                <action selector="dismissSettings:" destination="eME-PV-40L" id="6V5-Db-AJw"/>
-                                            </connections>
-                                        </barButtonItem>
-                                    </navigationItem>
-                                </items>
-                            </navigationBar>
                         </subviews>
                         <constraints>
                             <constraint firstItem="QxJ-XP-gTT" firstAttribute="top" secondItem="GVd-9v-ljS" secondAttribute="top" id="2KR-YO-JKT"/>
                             <constraint firstItem="QxJ-XP-gTT" firstAttribute="bottom" secondItem="14Q-8j-4y2" secondAttribute="bottom" id="7fd-jl-JbU"/>
-                            <constraint firstItem="QxJ-XP-gTT" firstAttribute="top" secondItem="FqL-wW-5Tf" secondAttribute="top" id="d6f-qE-Faj"/>
-                            <constraint firstItem="GVd-9v-ljS" firstAttribute="trailing" secondItem="FqL-wW-5Tf" secondAttribute="trailing" id="eGh-uD-FHR"/>
+                            <constraint firstItem="QxJ-XP-gTT" firstAttribute="trailing" secondItem="GVd-9v-ljS" secondAttribute="trailing" id="JoB-Pn-8Cd"/>
                             <constraint firstItem="QxJ-XP-gTT" firstAttribute="leading" secondItem="GVd-9v-ljS" secondAttribute="leading" id="fSa-Bb-An7"/>
-                            <constraint firstItem="QxJ-XP-gTT" firstAttribute="trailing" secondItem="FqL-wW-5Tf" secondAttribute="trailing" id="uBL-aD-fOp"/>
-                            <constraint firstItem="FqL-wW-5Tf" firstAttribute="leading" secondItem="QxJ-XP-gTT" secondAttribute="leading" id="zaX-2c-QZb"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="GVd-9v-ljS"/>
                     </view>
