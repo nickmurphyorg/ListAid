@@ -7,10 +7,12 @@
 //
 
 import XCTest
+import CoreData
 @testable import Listaid
 
 class ModelControllerTests: XCTestCase {
 
+    var testListId: NSManagedObjectID!
     var testLists: [List]!
     var testItemList: [Item]!
     
@@ -20,12 +22,20 @@ class ModelControllerTests: XCTestCase {
     
     override func setUp() {
         testLists = ModelController.shared.addNewList()
-        testItemList = ModelController.shared.addItemToList(listIndex: testLists.count - 1, itemName: testItemName)
-        testItemList = ModelController.shared.addItemToList(listIndex: testLists.count - 1, itemName: testItemRename)
+        
+        if let newList = testLists.last {
+            testListId = newList.id
+        } else {
+            fatalError("List ID could not be returned.")
+        }
+        
+        testItemList = ModelController.shared.addItemToList(listId: testListId, itemName: testItemName)
+        testItemList = ModelController.shared.addItemToList(listId: testListId, itemName: testItemRename)
     }
 
     override func tearDown() {
-        _ = ModelController.shared.deleteList(listIndex: testLists.count - 1)
+        _ = ModelController.shared.deleteList(listId: testListId)
+        testListId = nil
         testLists = nil
         testItemList = nil
     }
@@ -39,26 +49,26 @@ class ModelControllerTests: XCTestCase {
     }
     
     func testUpdateListName() {
-        ModelController.shared.updateListName(listIndex: testLists.count - 1, newName: testRenameString)
+        ModelController.shared.updateListName(listId: testListId, newName: testRenameString)
         
-        let savedName = ModelController.shared.returnSavedListName(listIndex: testLists.count - 1)
+        let savedName = ModelController.shared.returnSavedListName(listId: testListId)
         
         XCTAssertEqual(savedName, testRenameString)
     }
     
     func testReturnSavedListName() {
-        let savedListName = ModelController.shared.returnSavedListName(listIndex: testLists.count - 1)
+        ModelController.shared.updateListName(listId: testListId, newName: testRenameString)
         
-        XCTAssertTrue(savedListName != nil)
+        let savedListName = ModelController.shared.returnSavedListName(listId: testListId)
+        
+        XCTAssertTrue(savedListName == testRenameString)
     }
     
     func testAddItemToList() {
-        let itemsInList = ModelController.shared.addItemToList(listIndex: testLists.count - 1, itemName: testItemName)
+        let itemsInList = ModelController.shared.addItemToList(listId: testListId, itemName: testItemName)
         
         if let itemsInList = itemsInList {
-            let lastItemInList = itemsInList.last
-            
-            XCTAssertEqual(testItemName, lastItemInList?.name)
+            XCTAssertTrue(testItemList.count < itemsInList.count)
         } else {
             XCTFail("Item was not added to list.")
         }
@@ -67,11 +77,11 @@ class ModelControllerTests: XCTestCase {
     func testSaveListIndex() {
         let listIndex = testLists.count - 1
         
-        ModelController.shared.saveListIndex(listIndex)
+        ModelController.shared.saveListIndex(listIndex, for: testListId)
         
-        let testList = ModelController.shared.returnFilteredList(atIndex: listIndex)
+        let updatedLists = ModelController.shared.returnAllLists()
         
-        if let testList = testList {
+        if let testList = updatedLists.last {
             XCTAssertTrue(testList.index == listIndex)
         } else {
             XCTFail("Test list could not be returned")
@@ -80,26 +90,21 @@ class ModelControllerTests: XCTestCase {
     }
     
     func testReturnAllItemsInList() {
-        let itemsInList = ModelController.shared.returnAllItemsInList(atIndex: testLists.count-1)
+        let itemsInList = ModelController.shared.returnAllItemsInList(testListId)
         
-        XCTAssertTrue(itemsInList != nil)
+        XCTAssertTrue(itemsInList.count == testItemList.count)
     }
     
-    func testReturnFilteredList() {
-        let filteredList = ModelController.shared.returnFilteredList(atIndex: testLists.count - 1)
-        
-        if let filteredList = filteredList {
-            let sansListed = filteredList.items.filter { $0.listed == true }
+    func testReturnFilteredItemsInList() {
+        let filteredList = ModelController.shared.returnFilteredItemsInList(listId: testListId)
+        let sansListed = filteredList.filter { $0.listed == true }
             
-            XCTAssertTrue(sansListed.count == 0)
-        } else {
-            XCTFail("Filtered list could not be returned.")
-        }
+        XCTAssertTrue(sansListed.count == 0)
     }
     
     func testRenameItemInList() {
-        let updatedItemList = ModelController.shared.renameItemInList(listIndex: testLists.count - 1, itemIndex: 0, newName: testItemRename)
-        let renamedItem = updatedItemList?.first
+        let updatedItemList = ModelController.shared.renameItem(0, in: testItemList, to: testItemRename)
+        let renamedItem = updatedItemList.first
         
         if let renamedItem = renamedItem {
             XCTAssertEqual(renamedItem.name, testItemRename)
@@ -111,56 +116,56 @@ class ModelControllerTests: XCTestCase {
     func testToggleItemListStatus() {
         let itemID = testItemList[0].id
         
-        ModelController.shared.toggleItemListStatus(listIndex: testLists.count - 1, itemID: itemID)
+        ModelController.shared.toggleListStatus(itemID: itemID)
         
-        let itemsInList = ModelController.shared.returnAllItemsInList(atIndex: testLists.count - 1)
+        let itemsInList = ModelController.shared.returnAllItemsInList(testListId)
         
-        if let itemsInList = itemsInList {
-            XCTAssertTrue(itemsInList[0].listed)
+        if let firstItem = itemsInList.first {
+            XCTAssertTrue(itemID == firstItem.id)
+            XCTAssertTrue(firstItem.listed)
         } else {
-            XCTFail("Item could not be checked for list status.")
+            XCTFail()
         }
     }
     
     func testToggleItemCompletionStatus() {
         let itemID = testItemList[0].id
         
-        ModelController.shared.toggleItemCompletionStatus(listIndex: testLists.count - 1, itemID: itemID)
+        ModelController.shared.toggleCompletionStatus(itemID: itemID)
         
-        let itemsInList = ModelController.shared.returnAllItemsInList(atIndex: testLists.count - 1)
+        let itemsInList = ModelController.shared.returnAllItemsInList(testListId)
         
-        if let itemsInList = itemsInList {
-            XCTAssertTrue(itemsInList[0].completed)
+        if let firstItem = itemsInList.first {
+            XCTAssertTrue(firstItem.id == itemID)
+            XCTAssertTrue(firstItem.completed)
         } else {
-            XCTFail("Item could not be checked for list status.")
+            XCTFail()
         }
     }
     
     func testDeleteItemInList() {
-        let allItemsInList = ModelController.shared.returnAllItemsInList(atIndex: testLists.count - 1)
-        let updatedList = ModelController.shared.deleteItemInList(listIndex: testLists.count - 1, itemIndex: 0)
+        let firstItemID = testItemList.first?.id
         
-        if allItemsInList != nil && updatedList != nil {
-            XCTAssertTrue(allItemsInList!.count > updatedList!.count)
+        var updatedList = ModelController.shared.deleteItem(0, in: testItemList)
+        updatedList = ModelController.shared.returnAllItemsInList(testListId)
+        
+        if let firstItem = updatedList.first {
+            XCTAssertTrue(firstItemID != nil && firstItemID != firstItem.id)
         } else {
-            XCTFail("Item could not be deleted from list.")
+            XCTFail()
         }
     }
     
     func testDeleteList() {
-        let sampleLists = ModelController.shared.deleteList(listIndex: testLists.count - 1)
+        let sampleLists = ModelController.shared.deleteList(listId: testListId)
         
         guard sampleLists.count > 0 else {
             XCTAssertTrue(sampleLists.count == 0)
             
-            testLists = sampleLists
-            
             return
         }
  
-        XCTAssertTrue(sampleLists.count < testLists.count && sampleLists[0].index == 0)
-        
-        testLists = sampleLists
+        XCTAssertTrue(sampleLists.count < testLists.count)
     }
     
     func testReorderList() {
@@ -173,28 +178,19 @@ class ModelControllerTests: XCTestCase {
         let firstListID = testLists[0].id
         let secondListID = testLists[1].id
         
-        _ = ModelController.shared.reorderList(0, 1)
+        testLists = ModelController.shared.reorder(lists: testLists, 0, 1)
         
-        let savedFirstList = ModelController.shared.returnFilteredList(atIndex: 0)
-        let savedSecondList = ModelController.shared.returnFilteredList(atIndex: 1)
+        let savedLists = ModelController.shared.returnAllLists()
         
-        XCTAssertTrue(savedFirstList?.id == secondListID && savedSecondList?.id == firstListID)
+        XCTAssertTrue(savedLists[0].id == secondListID && savedLists[1].id == firstListID)
     }
     
     func testReorderItemInList() {
-        let lastListIndex = testLists.count - 1
-        
-        guard let lastListItems = ModelController.shared.returnAllItemsInList(atIndex: lastListIndex) else {
-            XCTFail("Could not return all list items.")
-            
-            return
+        for item in testItemList {
+            ModelController.shared.toggleListStatus(itemID: item.id)
         }
         
-        for item in lastListItems {
-            ModelController.shared.toggleItemListStatus(listIndex: lastListIndex, itemID: item.id)
-        }
-        
-        let listItems = ModelController.shared.returnFilteredItemsInList(atIndex: lastListIndex)
+        var listItems = ModelController.shared.returnFilteredItemsInList(listId: testListId)
         
         guard listItems.count > 1 else {
             XCTFail("Not enough items to test reorder.")
@@ -202,38 +198,56 @@ class ModelControllerTests: XCTestCase {
             return
         }
         
-        let itemOneID = listItems[0].id
-        let itemTwoID = listItems[1].id
+        listItems = ModelController.shared.reorder(items: listItems, 0, 1)
         
-        let updatedItemList = ModelController.shared.reorderItemIn(list: lastListIndex, 0, 1)
+        let updatedListItems = ModelController.shared.returnFilteredItemsInList(listId: testListId)
         
-        XCTAssertEqual(updatedItemList[0].id, itemTwoID)
-        XCTAssertEqual(updatedItemList[0].index, 0)
-        XCTAssertEqual(updatedItemList[1].id, itemOneID)
-        XCTAssertEqual(updatedItemList[1].index, 1)
+        XCTAssertEqual(listItems, updatedListItems)
+    }
+    
+    func testReturnSortedItemsInList() {
+        // List The Items
+        for item in testItemList {
+            ModelController.shared.toggleListStatus(itemID: item.id)
+        }
+        
+        var itemsSorted = true
+        
+        let listedItems = ModelController.shared.returnSortedItemsInList(testListId)
+        
+        for (index, item) in listedItems.enumerated() {
+            if item.index! != index || item.listed == false {
+                itemsSorted = false
+            }
+        }
+        
+        XCTAssertTrue(itemsSorted)
     }
     
     func testPurgeList() {
         let itemID = testItemList[0].id
         
-        ModelController.shared.toggleItemListStatus(listIndex: testLists.count - 1, itemID: itemID)
-        ModelController.shared.toggleItemCompletionStatus(listIndex: testLists.count - 1, itemID: itemID)
+        // Update local array before passing into ModelController
+        testItemList[0].listed = true
+        testItemList[0].completed = true
         
-        let purgedList = ModelController.shared.purgeCompletedItems(listIndex: testLists.count - 1)
+        // Update the item in Core Data
+        ModelController.shared.toggleListStatus(itemID: itemID)
+        ModelController.shared.toggleCompletionStatus(itemID: itemID)
+        
+        _ = ModelController.shared.purgeCompleted(items: testItemList)
+        
+        let savedListItems = ModelController.shared.returnFilteredItemsInList(listId: testListId)
         
         var allItemsPurged = true
         
-        if let purgedList = purgedList {
-            for item in purgedList.items {
-                if item.listed || item.completed {
-                    allItemsPurged = false
-                }
+        for item in savedListItems {
+            if item.completed {
+                allItemsPurged = false
             }
-            
-            XCTAssert(allItemsPurged)
-        } else {
-            XCTFail("Purged list could not be unwrapped.")
         }
+        
+        XCTAssert(allItemsPurged)
     }
 
 }

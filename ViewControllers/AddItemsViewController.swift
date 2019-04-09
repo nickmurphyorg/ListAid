@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class AddItemsViewController: UIViewController {
 
@@ -16,12 +17,12 @@ class AddItemsViewController: UIViewController {
     @IBOutlet weak var backgroundView: UIView!
     @IBOutlet weak var itemsTableView: UITableView!
     
-    private var editingItemAtIndex: Int?
-    
     var editListItemsDelegate: EditListItemsDelegate?
-    var selectedListIndex = Int()
-    var selectedListItems = [Item]()
-    var searchResultItems = [Item]()
+    var selectedListId: NSManagedObjectID!
+    
+    private var selectedListItems = [Item]()
+    private var searchResultItems = [Item]()
+    private var editingItemAtIndex: Int?
     
     private let addItemsTitle = "Add Items"
     private let editItemTitle = "Edit Item"
@@ -31,11 +32,7 @@ class AddItemsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let savedListItems = ModelController.shared.returnAllItemsInList(atIndex: selectedListIndex)
-        
-        if let allListItems = savedListItems {
-            selectedListItems = allListItems
-        }
+        selectedListItems = ModelController.shared.returnAllItemsInList(selectedListId)
         
         itemsTableView.contentInset.top = navigationView.bounds.height
     }
@@ -54,7 +51,6 @@ class AddItemsViewController: UIViewController {
     override var preferredStatusBarStyle: UIStatusBarStyle{
         return .lightContent
     }
-
 }
 
 //MARK: - Search Bar
@@ -77,7 +73,7 @@ extension AddItemsViewController: UISearchBarDelegate {
         }
         
         if searchResultItems.count == 0 && editingItemAtIndex == nil {
-            updatedList = ModelController.shared.addItemToList(listIndex: selectedListIndex, itemName: searchBar.text!)
+            updatedList = ModelController.shared.addItemToList(listId: selectedListId, itemName: searchBar.text!)
             
         } else if searchResultItems.count > 0 && editingItemAtIndex == nil {
             var addNewItem = true
@@ -89,11 +85,11 @@ extension AddItemsViewController: UISearchBarDelegate {
             }
             
             if addNewItem {
-                updatedList = ModelController.shared.addItemToList(listIndex: selectedListIndex, itemName: searchBar.text!)
+                updatedList = ModelController.shared.addItemToList(listId: selectedListId, itemName: searchBar.text!)
             }
             
         } else if searchResultItems.count == 0 && editingItemAtIndex != nil {
-            updatedList = ModelController.shared.renameItemInList(listIndex: selectedListIndex, itemIndex: editingItemAtIndex!, newName: searchBar.text!)
+            updatedList = ModelController.shared.renameItem(editingItemAtIndex!, in: updatedList!, to: searchBar.text!)
             
             editingItemAtIndex = nil
             
@@ -103,7 +99,7 @@ extension AddItemsViewController: UISearchBarDelegate {
             for item in searchResultItems {
                 if searchBar.text!.lowercased() == item.name.lowercased() && selectedListItems[editingItemAtIndex!].id != item.id {
                     // Item is renamed to an existing item
-                    updatedList = ModelController.shared.deleteItemInList(listIndex: selectedListIndex, itemIndex: editingItemAtIndex!)
+                    updatedList = ModelController.shared.deleteItem(editingItemAtIndex!, in: updatedList!)
                     
                     updateItemName = false
                 } else if searchBar.text!.lowercased() == item.name.lowercased() && selectedListItems[editingItemAtIndex!].id == item.id {
@@ -113,7 +109,7 @@ extension AddItemsViewController: UISearchBarDelegate {
             }
             
             if updateItemName {
-                updatedList = ModelController.shared.renameItemInList(listIndex: selectedListIndex, itemIndex: editingItemAtIndex!, newName: searchBar.text!)
+                updatedList = ModelController.shared.renameItem(editingItemAtIndex!, in: updatedList!, to: searchBar.text!)
             }
             
             editingItemAtIndex = nil
@@ -191,13 +187,9 @@ extension AddItemsViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { [weak self] (action:UITableViewRowAction, indexPath: IndexPath) in
-            guard let listIndex = self?.selectedListIndex else { return }
+            guard let weakSelf = self else { return }
             
-            let updatedList = ModelController.shared.deleteItemInList(listIndex: listIndex, itemIndex: indexPath.row)
-            
-            if let updatedList = updatedList {
-                self?.selectedListItems = updatedList
-            }
+            weakSelf.selectedListItems = ModelController.shared.deleteItem(indexPath.row, in: weakSelf.selectedListItems)
             
             tableView.reloadData()
         }
@@ -235,7 +227,7 @@ extension AddItemsViewController: ToggleListedItem {
             } else {
                 selectedListItems[index].listed.toggle()
                 
-                ModelController.shared.toggleItemListStatus(listIndex: selectedListIndex, itemID: selectedListItems[index].id)
+                ModelController.shared.toggleListStatus(itemID: selectedListItems[index].id)
             }
             
             itemsTableView.reloadRows(at: [indexPath], with: .automatic)
@@ -250,7 +242,7 @@ extension AddItemsViewController {
             if item == updateItem {
                 selectedListItems[index].listed.toggle()
                 
-                ModelController.shared.toggleItemListStatus(listIndex: selectedListIndex, itemID: selectedListItems[index].id)
+                ModelController.shared.toggleListStatus(itemID: selectedListItems[index].id)
             }
         }
     }
@@ -263,7 +255,7 @@ extension AddItemsViewController {
     }
     
     @IBAction func finishAddItems(_ sender: UIBarButtonItem) {
-        let listedItems = ModelController.shared.returnFilteredItemsInList(atIndex: selectedListIndex)
+        let listedItems = ModelController.shared.returnSortedItemsInList(selectedListId)
         
         editListItemsDelegate?.editItems(items: listedItems)
         

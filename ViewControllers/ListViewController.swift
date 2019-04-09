@@ -19,7 +19,7 @@ class ListViewController: UIViewController {
     var zoomInteractionController: ZoomInteractionController?
     var dragReorderInteractionController: DragReorderInteractionController?
     
-    var selectedListIndex = Int()
+    var selectedList: List!
     var selectedListItems = [Item]()
     
     private let cellIdentifier = "ItemCell"
@@ -30,8 +30,8 @@ class ListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        selectedListItems = ModelController.shared.returnFilteredItemsInList(atIndex: selectedListIndex)
-        listNameLabel.text = ModelController.shared.returnSavedListName(listIndex: selectedListIndex) ?? ""
+        selectedListItems = selectedList.items
+        listNameLabel.text = selectedList.name
         
         listBackground.layer.cornerRadius = listStyleMetrics.cornerRadius
         itemsTableView.bounces = false
@@ -74,6 +74,8 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
         
         if itemData.completed {
             cell.strikeThroughWidthConstraint.constant = completeStrikeWidth
+        } else {
+            cell.strikeThroughWidthConstraint.constant = listStyleMetrics.strikeWidth
         }
         
         cell.strikeCompleteDelegate = self
@@ -86,10 +88,9 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
         var cellOptions: [UITableViewRowAction] = []
         
         let removeAction = UITableViewRowAction(style: .normal, title: "Remove", handler: { [weak self] (action:UITableViewRowAction, indexPath: IndexPath) -> Void in
-            guard let listIndex = self?.selectedListIndex else { return }
             guard let weakSelf = self else { return }
             
-            ModelController.shared.toggleItemListStatus(listIndex: listIndex, itemID: weakSelf.selectedListItems[indexPath.row].id)
+            ModelController.shared.toggleListStatus(itemID: weakSelf.selectedListItems[indexPath.row].id)
             
             weakSelf.selectedListItems.remove(at: indexPath.row)
             
@@ -100,10 +101,10 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
         cellOptions.append(removeAction)
         
         let relistAction = UITableViewRowAction(style: .normal, title: "Relist", handler: { [weak self] (action: UITableViewRowAction, indexPath: IndexPath) -> Void in
-            guard let weakSelf = self else { return }
-            guard let editingCell = tableView.cellForRow(at: indexPath) as? ItemTableViewCell else { return }
-            
-            let listIndex = weakSelf.selectedListIndex
+            guard let weakSelf = self,
+                let editingCell = tableView.cellForRow(at: indexPath) as? ItemTableViewCell else {
+                    return
+            }
             
             UIView.animate(withDuration: 1) {
                 editingCell.strikeThrough.frame.size.width = weakSelf.listStyleMetrics.strikeWidth
@@ -111,7 +112,7 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
             
             weakSelf.selectedListItems[indexPath.row].completed.toggle()
             
-            ModelController.shared.toggleItemCompletionStatus(listIndex: listIndex, itemID: weakSelf.selectedListItems[indexPath.row].id)
+            ModelController.shared.toggleCompletionStatus(itemID: weakSelf.selectedListItems[indexPath.row].id)
         })
         
         if selectedListItems[indexPath.row].completed {
@@ -145,7 +146,7 @@ extension ListViewController: StrikeCompleteDelegate {
         
         selectedListItems[cellPath.row].completed.toggle()
         
-        ModelController.shared.toggleItemCompletionStatus(listIndex: selectedListIndex, itemID: selectedListItems[cellPath.row].id)
+        ModelController.shared.toggleCompletionStatus(itemID: selectedListItems[cellPath.row].id)
         
         itemsTableView.reloadRows(at: [cellPath], with: .automatic)
     }
@@ -170,7 +171,7 @@ extension ListViewController {
                 return
         }
         
-        selectedListItems = ModelController.shared.reorderItemIn(list: selectedListIndex, fromIndex, toIndex)
+        selectedListItems = ModelController.shared.reorder(items: selectedListItems, fromIndex, toIndex)
     }
 }
 
@@ -178,13 +179,9 @@ extension ListViewController {
 extension ListViewController {
     override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         if motion == .motionShake {
-            let purgedList = ModelController.shared.purgeCompletedItems(listIndex: selectedListIndex)
+            selectedListItems = ModelController.shared.purgeCompleted(items: selectedListItems)
             
-            if let purgedList = purgedList {
-                selectedListItems = purgedList.items
-                
-                itemsTableView.reloadSections(IndexSet.init(integer: 0), with: .automatic)
-            }
+            itemsTableView.reloadSections(IndexSet.init(integer: 0), with: .automatic)
         }
     }
 }
@@ -196,7 +193,7 @@ extension ListViewController {
         case addItemsSegue:
             let destinationNavigationController = segue.destination as! UINavigationController
             let destinationViewController = destinationNavigationController.viewControllers.first as! AddItemsViewController
-            destinationViewController.selectedListIndex = selectedListIndex
+            destinationViewController.selectedListId = selectedList.id
             destinationViewController.editListItemsDelegate = self
 
         default:

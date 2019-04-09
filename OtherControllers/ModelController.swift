@@ -18,18 +18,21 @@ class ModelController {
     private let listNameKey = "name"
     
     private var managedContext: NSManagedObjectContext? = nil
-    private var lists = [List]()
     
-    // TODO: Will need to setup a serial queue to perform operations on the objects...
+    // TODO: Will need to setup a serial queue to perform operations in sequence on background thread...
     
     private init() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         
         managedContext = appDelegate.persistentContainer.viewContext
-        
-        guard managedContext != nil else { return }
+    }
+    
+    func returnAllLists() -> [List] {
+        guard managedContext != nil else { return [] }
         
         let savedList = NSFetchRequest<NSManagedObject>(entityName: listObject)
+        
+        var lists = [List]()
         
         do {
             let savedLists: [NSManagedObject] = try managedContext!.fetch(savedList)
@@ -37,7 +40,7 @@ class ModelController {
             print("CoreData returned \(savedLists.count) lists.")
             
             for list in savedLists {
-                let listInstance = List.init(drinkEntity: list)
+                let listInstance = List.init(listEntity: list)
                 
                 lists.append(listInstance)
             }
@@ -54,65 +57,48 @@ class ModelController {
         } catch let error as NSError {
             print("CoreData could not retrieve lists: \(error) \n \(error.userInfo)")
         }
+        
+        return lists
     }
     
-    func returnAllLists() -> [List] {
-        var filteredLists = [List]()
+    func returnSavedListName(listId: NSManagedObjectID) -> String? {
+        guard managedContext != nil else { return nil }
         
-        for (index, var list) in lists.enumerated() {
-            list.items = returnFilteredItemsInList(atIndex: index)
-            
-            filteredLists.append(list)
-        }
+        let listEntity = managedContext?.object(with: listId) as! ListObject
         
-        return filteredLists
-    }
-    
-    func returnFilteredList(atIndex: Int) -> List? {
-        guard lists.indices.contains(atIndex) else { return nil }
-        
-        var savedList = lists[atIndex]
-        savedList.items = returnFilteredItemsInList(atIndex: atIndex)
-        
-        return savedList
-    }
-    
-    func returnSavedListName(listIndex: Int) -> String? {
-        guard lists.indices.contains(listIndex) else { return nil }
-        
-        return lists[listIndex].name
+        return listEntity.name
     }
     
     func addNewList() -> [List] {
-        guard managedContext != nil else { return returnAllLists() }
+        var savedLists = returnAllLists()
+        
+        guard managedContext != nil else { return savedLists }
         
         let coreDataEntity = NSEntityDescription.entity(forEntityName: listObject, in: managedContext!)
         let newListEntity = NSManagedObject(entity: coreDataEntity!, insertInto: managedContext!) as! ListObject
-        newListEntity.index = Int16(lists.count)
+        newListEntity.index = Int16(savedLists.count)
         
         do {
             try managedContext?.save()
             
-            lists.append(List(drinkEntity: newListEntity))
+            savedLists.append(List(listEntity: newListEntity))
             
             print("New list was saved.")
         } catch let error as NSError {
             print("Could not save new list.\nError: \(error)")
         }
         
-        return returnAllLists()
+        return savedLists
     }
     
-    func updateListName(listIndex: Int, newName: String) {
-        guard managedContext != nil && lists.indices.contains(listIndex) else { return }
+    func updateListName(listId: NSManagedObjectID, newName: String) {
+        guard managedContext != nil else { return }
         
-        let listToRename = managedContext!.object(with: lists[listIndex].id) as! ListObject
+        let listToRename = managedContext!.object(with: listId) as! ListObject
         listToRename.name = newName
         
         do {
             try managedContext?.save()
-            
-            lists[listIndex].name = newName
             
             print("List was renamed to: \(newName).")
         } catch let error as NSError {
@@ -120,83 +106,109 @@ class ModelController {
         }
     }
     
-    func deleteList(listIndex: Int) -> [List] {
-        guard managedContext != nil && lists.indices.contains(listIndex) else { return returnAllLists() }
+    func deleteList(listId: NSManagedObjectID) -> [List] {
+        guard managedContext != nil else { return returnAllLists() }
         
-        let listToDelete = managedContext!.object(with: lists[listIndex].id)
+        var updatedLists = [List]()
+        
+        let listToDelete = managedContext!.object(with: listId) as! ListObject
         
         managedContext?.delete(listToDelete)
         
         do {
             try managedContext?.save()
             
-            lists.remove(at: listIndex)
+            updatedLists = returnAllLists()
             
-            for index in listIndex..<lists.count {
-                lists[index].index = index
-                
-                saveListIndex(index)
+            for (index, list) in updatedLists.enumerated() {
+                if list.index != index {
+                    updatedLists[index].index = index
+                    
+                    saveListIndex(index, for: list.id)
+                }
             }
             
             print("List was deleted.")
         } catch let error as NSError {
-            print("Could not delete list \(lists[listIndex].name). Error: \(error)")
+            print("Could not delete list. Error: \(error)")
         }
         
-        return returnAllLists()
+        return updatedLists
     }
     
-    func reorderList(_ from: Int, _ to: Int) -> [List] {
-        lists.swapAt(from, to)
-        lists[from].index = to
-        lists[to].index = from
+    // Might make this an extension...
+    func reorder(lists: [List], _ fromIndex: Int, _ toIndex: Int) -> [List] {
+        var savedLists = lists
         
-        saveListIndex(from)
-        saveListIndex(to)
+        savedLists.swapAt(fromIndex, toIndex)
+        savedLists[fromIndex].index = toIndex
+        savedLists[toIndex].index = fromIndex
         
-        return returnAllLists()
+        saveListIndex(fromIndex, for: savedLists[fromIndex].id)
+        saveListIndex(toIndex, for: savedLists[toIndex].id)
+        
+        return savedLists
     }
     
-    func saveListIndex(_ index: Int) {
-        guard managedContext != nil && lists.indices.contains(index) else { return }
+    func saveListIndex(_ index: Int, for listId: NSManagedObjectID) {
+        guard managedContext != nil else { return }
         
-        let list = managedContext!.object(with: lists[index].id) as! ListObject
+        let list = managedContext!.object(with: listId) as! ListObject
         list.index = Int16(index)
         
-        // On a background thread in the dispatch queue...
+        // On a background thread in the dispatch serial queue...
         do {
             try managedContext?.save()
         } catch let error as NSError {
-            print("Could not update index for \(lists[index].name): \(error)")
+            print("Could not update list index: \(error)")
         }
     }
     
-    func returnAllItemsInList(atIndex: Int) -> [Item]? {
-        guard lists.indices.contains(atIndex) else { return nil }
+    func returnAllItemsInList(_ listId: NSManagedObjectID) -> [Item] {
+        guard managedContext != nil else { return [] }
         
-        return lists[atIndex].items
-    }
-    
-    func returnFilteredItemsInList(atIndex: Int) -> [Item] {
-        guard lists.indices.contains(atIndex) else {
-            return []
+        var listItems = [Item]()
+        
+        let list = managedContext!.object(with: listId) as! ListObject
+        
+        if let savedItems = list.items {
+            for item in savedItems {
+                listItems.append(Item.init(itemEntity: item as! NSManagedObject))
+            }
         }
         
-        var filteredItemList = lists[atIndex].items.filter { $0.listed == true }
-        filteredItemList = sortItemsByIndex(filteredItemList)
-        
-        return filteredItemList
+        return listItems
     }
     
-    func addItemToList(listIndex: Int, itemName: String) -> [Item]? {
-        guard managedContext != nil && lists.indices.contains(listIndex) else { return returnAllItemsInList(atIndex: listIndex) }
+    func returnFilteredItemsInList(listId: NSManagedObjectID) -> [Item] {
+        guard managedContext != nil else { return [] }
         
-        let listEntity = managedContext!.object(with: lists[listIndex].id) as! ListObject
+        var listItems = [Item]()
+        
+        let list = managedContext!.object(with: listId) as! ListObject
+        
+        if list.items != nil {
+            let filterPredicate = NSPredicate(format: "listed == true")
+            let listedItems = Array(list.items!.filtered(using: filterPredicate))
+            
+            for item in listedItems {
+                listItems.append(Item.init(itemEntity: item as! NSManagedObject))
+            }
+            
+            listItems = sortItemsByIndex(listItems)
+        }
+        
+        return listItems
+    }
+    
+    func addItemToList(listId: NSManagedObjectID, itemName: String) -> [Item]? {
+        guard managedContext != nil else { return returnAllItemsInList(listId) }
+        
+        let listEntity = managedContext!.object(with: listId) as! ListObject
         let itemEntity = NSEntityDescription.insertNewObject(forEntityName: itemObject, into: managedContext!) as! ItemObject
         
         itemEntity.name = itemName
         itemEntity.completed = false
-        // .index: int? = nil
         itemEntity.listed = false
         itemEntity.list = listEntity
         
@@ -205,67 +217,61 @@ class ModelController {
         do {
             try managedContext?.save()
             
-            lists[listIndex].items.append(Item.init(itemEntity: itemEntity))
-            
             print("\(itemName) was added to list.")
         } catch let error as NSError {
             print("\(itemName) could not be added. Error: \(error)")
         }
         
-        return returnAllItemsInList(atIndex: listIndex)
+        return returnAllItemsInList(listId)
     }
     
-    func deleteItemInList(listIndex: Int, itemIndex: Int) -> [Item]? {
-        guard managedContext != nil &&
-            lists.indices.contains(listIndex) &&
-            lists[listIndex].items.indices.contains(itemIndex)
-        else {
-            return returnAllItemsInList(atIndex: listIndex)
+    func deleteItem(_ index: Int, in items: [Item]) -> [Item] {
+        guard managedContext != nil && items.indices.contains(index) else {
+            return items
         }
         
-        let itemToDelete = managedContext!.object(with: lists[listIndex].items[itemIndex].id)
+        var listItems = items
+        
+        let itemToDelete = managedContext!.object(with: listItems[index].id)
         
         managedContext!.delete(itemToDelete)
         
         do {
             try managedContext?.save()
             
-            lists[listIndex].items.remove(at: itemIndex)
+            listItems.remove(at: index)
 
             print("Item was deleted.")
         } catch let error as NSError {
             print("Item could not be deleted. Error: \(error)")
         }
         
-        return returnAllItemsInList(atIndex: listIndex)
+        return listItems
     }
     
-    func renameItemInList(listIndex: Int, itemIndex: Int, newName: String) -> [Item]? {
-        guard managedContext != nil &&
-            lists.indices.contains(itemIndex) &&
-            lists[listIndex].items.indices.contains(itemIndex)
-        else {
-            return returnAllItemsInList(atIndex: listIndex)
-        }
+    func renameItem(_ index: Int, in items: [Item], to newName: String) -> [Item] {
+        guard managedContext != nil && items.indices.contains(index) else { return items }
         
-        let itemToRename = managedContext!.object(with: lists[listIndex].items[itemIndex].id) as! ItemObject
+        var listItems = items
+        
+        let itemToRename = managedContext!.object(with: items[index].id) as! ItemObject
         itemToRename.name = newName
         
         do {
             try managedContext!.save()
             
-            lists[listIndex].items[itemIndex].name = newName
+            listItems[index].name = newName
             
             print("Item was renamed: \(newName)")
         } catch let error as NSError {
             print("Could not rename item to \(newName). Error: \(error)")
         }
         
-        return returnAllItemsInList(atIndex: listIndex)
+        return listItems
     }
     
-    func toggleItemListStatus(listIndex: Int, itemID: NSManagedObjectID) {
-        guard managedContext != nil && lists.indices.contains(listIndex) else { return }
+    func toggleListStatus(itemID: NSManagedObjectID) {
+        guard managedContext != nil else { return }
         
         let itemEntity = managedContext!.object(with: itemID) as! ItemObject
         itemEntity.listed.toggle()
@@ -274,23 +280,14 @@ class ModelController {
         do {
             try managedContext?.save()
             
-            for (index, item) in lists[listIndex].items.enumerated() {
-                if item.id === itemID {
-                    lists[listIndex].items[index].listed.toggle()
-                    lists[listIndex].items[index].completed = false
-                    
-                    break
-                }
-            }
-            
             print("\(itemEntity.name ?? "Item") was toggled.")
         } catch let error as NSError {
             print("Item listed could not be toggled. Error: \(error)")
         }
     }
     
-    func toggleItemCompletionStatus(listIndex: Int, itemID: NSManagedObjectID) {
-        guard managedContext != nil && lists.indices.contains(listIndex) else { return }
+    func toggleCompletionStatus(itemID: NSManagedObjectID) {
+        guard managedContext != nil else { return }
         
         let itemToToggle = managedContext!.object(with: itemID) as! ItemObject
         itemToToggle.completed.toggle()
@@ -298,78 +295,96 @@ class ModelController {
         do {
             try managedContext?.save()
             
-            for (index, item) in lists[listIndex].items.enumerated() {
-                if item.id === itemID {
-                    lists[listIndex].items[index].completed.toggle()
-                    
-                    break
-                }
-            }
-            
             print("\(itemToToggle.name ?? "Item") completion was toggled.")
         } catch let error as NSError {
             print("Item completion could not be toggled. Error: \(error)")
         }
     }
     
-    func reorderItemIn(list: Int, _ fromIndex: Int, _ toIndex: Int) -> [Item] {
-        let listItems = returnFilteredItemsInList(atIndex: list)
-        let itemToMove = listItems[fromIndex].id
-        let itemToBump = listItems[toIndex].id
+    //might make an extension...
+    func reorder(items: [Item], _ fromIndex: Int, _ toIndex: Int) -> [Item] {
+        var listItems = items
         
-        updateItem(itemToMove, index: toIndex)
-        updateItem(itemToBump, index: fromIndex)
+        listItems.swapAt(fromIndex, toIndex)
+        listItems[toIndex].index = toIndex
+        listItems[fromIndex].index = fromIndex
         
-        for (index, item) in lists[list].items.enumerated() {
-            if item.id == itemToMove {
-                lists[list].items[index].index = toIndex
-            } else if item.id == itemToBump {
-                lists[list].items[index].index = fromIndex
+        saveItem(listItems[toIndex].id, index: toIndex)
+        saveItem(listItems[fromIndex].id, index: fromIndex)
+        
+        return listItems
+    }
+    
+    func returnSortedItemsInList(_ listId: NSManagedObjectID) -> [Item] {
+        guard managedContext != nil else { return [] }
+        
+        var listItems = [Item]()
+        
+        let list = managedContext!.object(with: listId) as! ListObject
+        
+        if list.items != nil {
+            let filterPredicate = NSPredicate(format: "listed == true")
+            let listedItems = Array(list.items!.filtered(using: filterPredicate))
+            
+            for item in listedItems {
+                listItems.append(Item.init(itemEntity: item as! NSManagedObject))
+            }
+            
+            // Update Items With An Accurate Index
+            for (index, item) in listItems.enumerated() {
+                if item.index ?? nil != index {
+                    listItems[index].index = index
+                    
+                    saveItem(item.id, index: index)
+                }
             }
         }
         
-        let updatedListItems = returnFilteredItemsInList(atIndex: list)
-        
-        return updatedListItems
+        return listItems
     }
     
-    func purgeCompletedItems(listIndex: Int) -> List? {
-        guard managedContext != nil && lists.indices.contains(listIndex) else { return nil }
+    func purgeCompleted(items: [Item]) -> [Item] {
+        guard managedContext != nil else { return items }
         
-        var editedItemIndicies = [Int]()
+        var listItems = items
         
-        for (index, item) in lists[listIndex].items.enumerated() {
-            if item.completed && item.listed {
+        // Update completed items in core data
+        for item in listItems {
+            if item.completed {
                 let itemToPurge = managedContext!.object(with: item.id) as! ItemObject
                 itemToPurge.completed.toggle()
                 itemToPurge.index = -1
                 itemToPurge.listed.toggle()
-                
-                editedItemIndicies.append(index)
             }
         }
+        
+        // Remove completed items
+        listItems = listItems.filter { $0.completed == false }
         
         do {
             try managedContext?.save()
             
-            for index in editedItemIndicies {
-                lists[listIndex].items[index].completed.toggle()
-                lists[listIndex].items[index].index = nil
-                lists[listIndex].items[index].listed.toggle()
+            // Save the updated item index to core data
+            for (index, item) in listItems.enumerated() {
+                if item.index ?? nil != index {
+                    listItems[index].index = index
+                    
+                    saveItem(item.id, index: index)
+                }
             }
             
-            print("\(lists[listIndex].name) has been purged.")
+            print("List has been purged.")
         } catch let error as NSError {
             print("Could not purge list: \(error)")
         }
         
-        return returnFilteredList(atIndex: listIndex)
+        return listItems
     }
 }
 
 //MARK: - Helper Methods
 extension ModelController {
-    private func sortItemsByIndex(_ items: [Item]) -> [Item] {
+    func sortItemsByIndex(_ items: [Item]) -> [Item] {
         let sortedItems = items.sorted { (firstItem, secondItem) -> Bool in
             guard firstItem.index != nil && secondItem.index != nil else { return false }
             
@@ -379,7 +394,7 @@ extension ModelController {
         return sortedItems
     }
     
-    private func updateItem(_ itemID: NSManagedObjectID, index: Int) {
+    private func saveItem(_ itemID: NSManagedObjectID, index: Int) {
         guard managedContext != nil else { return }
         
         let itemToUpdate = managedContext?.object(with: itemID) as! ItemObject

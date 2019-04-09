@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  ListsViewController.swift
 //  Listaid
 //
 //  Created by Nick Murphy on 9/30/18.
@@ -196,7 +196,7 @@ extension ListsViewController: UITextFieldDelegate {
         }
         
         guard textField.hasText else {
-            let savedName = ModelController.shared.returnSavedListName(listIndex: listIndex)
+            let savedName = ModelController.shared.returnSavedListName(listId: lists[listIndex].id)
             
             if let savedName = savedName {
                 textField.text = savedName
@@ -214,7 +214,7 @@ extension ListsViewController: UITextFieldDelegate {
         //TODO - Refactor this method to be more specific.
         listCollectionView.reloadItems(at: [IndexPath(item: listIndex, section: 0)])
         
-        ModelController.shared.updateListName(listIndex: listIndex, newName: textField.text!)
+        ModelController.shared.updateListName(listId: lists[listIndex].id, newName: textField.text!)
     }
     
 }
@@ -229,13 +229,15 @@ extension ListsViewController: DeleteListDelegate {
         }
         
         let deleteAlert = Alert.newAlert(title: "Are you sure?", message: "You will not be able to recover the list.", hasCancel: true, buttonLabel: "Delete", buttonStyle: .destructive, completion: { [weak self] action in
-            self?.addListMode = false
+            guard let weakSelf = self else { return }
             
-            self?.lists = ModelController.shared.deleteList(listIndex: index)
+            weakSelf.addListMode = false
+            
+            weakSelf.lists = ModelController.shared.deleteList(listId: weakSelf.lists[index].id)
             
             let itemIndex = IndexPath(item: index, section: 0)
             
-            self?.listCollectionView.deleteItems(at: [itemIndex])
+            weakSelf.listCollectionView.deleteItems(at: [itemIndex])
         })
         
         present(deleteAlert, animated: true, completion: nil)
@@ -261,6 +263,8 @@ extension ListsViewController: UITableViewDelegate, UITableViewDataSource {
         
         if item.completed {
             cell.strikeThroughWidthConstraint.constant = completeStrikeWidth
+        } else {
+            cell.strikeThroughWidthConstraint.constant = listStyleMetrics.strikeWidth
         }
         
         return cell
@@ -288,7 +292,7 @@ extension ListsViewController {
                 return
         }
         
-        lists = ModelController.shared.reorderList(fromIndex, toIndex)
+        lists = ModelController.shared.reorder(lists: lists, fromIndex, toIndex)
     }
 }
 
@@ -318,7 +322,7 @@ extension ListsViewController {
         switch segue.identifier {
         case listSegueIdentifier:
             let destinationViewController = segue.destination as! ListViewController
-                destinationViewController.selectedListIndex = selectedListIndex
+                destinationViewController.selectedList = lists[selectedListIndex]
                 destinationViewController.editListDelegate = self
                 destinationViewController.transitioningDelegate = self
             

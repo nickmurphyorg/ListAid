@@ -17,8 +17,8 @@ struct List: Equatable {
 }
 
 extension List {
-    init(drinkEntity: NSManagedObject) {
-        let loadedEntity = drinkEntity as! ListObject
+    init(listEntity: NSManagedObject) {
+        let loadedEntity = listEntity as! ListObject
         let entityIndex = Int(loadedEntity.index)
         
         self.id = loadedEntity.objectID
@@ -27,11 +27,14 @@ extension List {
         self.items = []
         
         if loadedEntity.items != nil {
-            for item in loadedEntity.items!.allObjects {
-                let savedItem = Item.init(itemEntity: item as! NSManagedObject)
-                
-                self.items.append(savedItem)
+            let filterPredicate = NSPredicate(format: "listed == true")
+            let listedItems = Array(loadedEntity.items!.filtered(using: filterPredicate))
+            
+            for item in listedItems {
+                self.items.append(Item.init(itemEntity: item as! NSManagedObject))
             }
         }
+        
+        self.items = ModelController.shared.sortItemsByIndex(self.items)
     }
 }
