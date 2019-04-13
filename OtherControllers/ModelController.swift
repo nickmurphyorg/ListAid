@@ -16,10 +16,9 @@ class ModelController {
     private let listObject = "ListObject"
     private let itemObject = "ItemObject"
     private let listNameKey = "name"
+    private let saveQueue = DispatchQueue(label: "org.nickmurphy.ListAid.saveQueue", qos: .background)
     
     private var managedContext: NSManagedObjectContext? = nil
-    
-    // TODO: Will need to setup a serial queue to perform operations in sequence on background thread...
     
     private init() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
@@ -97,12 +96,16 @@ class ModelController {
         let listToRename = managedContext!.object(with: listId) as! ListObject
         listToRename.name = newName
         
-        do {
-            try managedContext?.save()
+        saveQueue.async { [weak self] in
+            guard let weakSelf = self else { return }
             
-            print("List was renamed to: \(newName).")
-        } catch let error as NSError {
-            print("List could not be renamed to: \(newName). Error: \(error)")
+            do {
+                try weakSelf.managedContext?.save()
+                
+                print("List was renamed to: \(newName).")
+            } catch let error as NSError {
+                print("List could not be renamed to: \(newName). Error: \(error)")
+            }
         }
     }
     
@@ -136,7 +139,6 @@ class ModelController {
         return updatedLists
     }
     
-    // Might make this an extension...
     func reorder(lists: [List], _ fromIndex: Int, _ toIndex: Int) -> [List] {
         var savedLists = lists
         
@@ -156,11 +158,14 @@ class ModelController {
         let list = managedContext!.object(with: listId) as! ListObject
         list.index = Int16(index)
         
-        // On a background thread in the dispatch serial queue...
-        do {
-            try managedContext?.save()
-        } catch let error as NSError {
-            print("Could not update list index: \(error)")
+        saveQueue.async { [weak self] in
+            guard let weakSelf = self else { return }
+            
+            do {
+                try weakSelf.managedContext?.save()
+            } catch let error as NSError {
+                print("Could not update list index: \(error)")
+            }
         }
     }
     
@@ -292,12 +297,16 @@ class ModelController {
         let itemToToggle = managedContext!.object(with: itemID) as! ItemObject
         itemToToggle.completed.toggle()
         
-        do {
-            try managedContext?.save()
+        saveQueue.async { [weak self] in
+            guard let weakSelf = self else { return }
             
-            print("\(itemToToggle.name ?? "Item") completion was toggled.")
-        } catch let error as NSError {
-            print("Item completion could not be toggled. Error: \(error)")
+            do {
+                try weakSelf.managedContext?.save()
+                
+                print("\(itemToToggle.name ?? "Item") completion was toggled.")
+            } catch let error as NSError {
+                print("Item completion could not be toggled. Error: \(error)")
+            }
         }
     }
     
@@ -400,11 +409,14 @@ extension ModelController {
         let itemToUpdate = managedContext?.object(with: itemID) as! ItemObject
         itemToUpdate.index = Int16(index)
         
-        // Perform on background thread...
-        do {
-            try managedContext?.save()
-        } catch let error as NSError {
-            print("There was a problem updating the item's index: \(error)")
+        saveQueue.async { [weak self] in
+            guard let weakSelf = self else { return }
+            
+            do {
+                try weakSelf.managedContext?.save()
+            } catch let error as NSError {
+                print("There was a problem updating the item's index: \(error)")
+            }
         }
     }
 }
