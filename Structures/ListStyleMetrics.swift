@@ -15,4 +15,5 @@ struct ListStyleMetric {
     let strikeWidth: CGFloat = 10
     let strikeHeight: CGFloat = 3
     let strikeCornerRadius: CGFloat = 1.5
+    let strikeCompleteMargin: CGFloat = 28
 }

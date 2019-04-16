@@ -11,68 +11,93 @@ import UIKit
 
 class StrikeInteractionController {
     
-    private var shouldCompleteStrike = false
-    private var interactionInProgress = false
-    private weak var tableViewCell: UITableViewCell!
-    private weak var contentView: UIView!
-    private weak var strikeView: UIView!
-    private var strikeStandardWidth: CGFloat!
-    private var strikeCompleteWidth: CGFloat!
+    private let listStyleMetrics = ListStyleMetric()
     
-    init(tableCell: UITableViewCell, strikeStandardWidth: CGFloat, strikeCompleteWidth: CGFloat) {
-        guard let tableCell = tableCell as? ItemTableViewCell else { return }
+    var interactionInProgress = false
+    
+    private var shouldCompleteStrike = false
+    private weak var viewController: UIViewController!
+    private weak var tableView: UITableView!
+    private var cellIndex: IndexPath?
+    private weak var tableViewCell: UITableViewCell?
+    private weak var strikeView: UIView?
+    private var strikeStandardWidth: CGFloat!
+    private var strikeCompleteWidth: CGFloat?
+    
+    init(viewController: UIViewController, tableView: UITableView) {
+        self.viewController = viewController
+        self.tableView = tableView
+        self.strikeStandardWidth = listStyleMetrics.strikeWidth
         
-        tableViewCell = tableCell
-        contentView = tableCell.contentView
-        strikeView = tableCell.strikeThrough
-        self.strikeStandardWidth = strikeStandardWidth
-        self.strikeCompleteWidth = strikeCompleteWidth
-        
-        prepareGestureRecognizer(tableViewCell: tableViewCell)
+        prepareGestureRecognizer(tableView: tableView)
     }
     
-    private func prepareGestureRecognizer(tableViewCell: UITableViewCell) {
+    private func prepareGestureRecognizer(tableView: UITableView) {
         let gestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handleGesture(gestureRecognizer:)))
-        gestureRecognizer.delegate = tableViewCell
+        gestureRecognizer.delegate = viewController as? UIGestureRecognizerDelegate
         
-        tableViewCell.addGestureRecognizer(gestureRecognizer)
+        tableView.addGestureRecognizer(gestureRecognizer)
     }
     
     @objc func handleGesture(gestureRecognizer: UIPanGestureRecognizer) {
-        guard strikeView.frame.width < strikeCompleteWidth! else { return }
+        let locationInView = gestureRecognizer.location(in: gestureRecognizer.view)
+        let translation = gestureRecognizer.translation(in: gestureRecognizer.view)
         
         switch gestureRecognizer.state {
             case .began:
-                interactionInProgress = true
+                guard let cellIndex = tableView.indexPathForRow(at: locationInView),
+                    let tableViewCell = tableView.cellForRow(at: cellIndex) as? ItemTableViewCell,
+                    let strikeView = tableViewCell.strikeThrough else { return }
+                
+                self.cellIndex = cellIndex
+                self.tableViewCell = tableViewCell
+                self.strikeView = strikeView
+                strikeCompleteWidth = tableViewCell.itemNameLabel.intrinsicContentSize.width + listStyleMetrics.strikeCompleteMargin
+                
+                // If item is complete do not animate
+                interactionInProgress = strikeView.frame.width.rounded() < strikeCompleteWidth!.rounded()
             
             case .changed:
-                let translation = gestureRecognizer.translation(in: gestureRecognizer.view)
+                guard strikeCompleteWidth != nil,
+                    strikeView != nil else { return }
+                
                 let beginAnimation = translation.x > 10
                 
-                if beginAnimation && interactionInProgress {
-                    let progress = translation.x / strikeCompleteWidth
-                    let strikeWidth = strikeStandardWidth + ((strikeCompleteWidth - strikeStandardWidth) * progress)
+                if interactionInProgress && beginAnimation {
+                    let progress = translation.x / strikeCompleteWidth!
+                    let strikeWidth = strikeStandardWidth + ((strikeCompleteWidth! - strikeStandardWidth) * progress)
                     
-                    if strikeWidth <= strikeCompleteWidth {
-                        strikeView.frame.size.width = strikeWidth
+                    if strikeWidth <= strikeCompleteWidth! {
+                        strikeView!.frame.size.width = strikeWidth
                     }
                     
                     shouldCompleteStrike = progress > 0.5
                 }
             
             default:
-                interactionInProgress = false
+                guard strikeCompleteWidth != nil,
+                    strikeView != nil,
+                    tableViewCell != nil,
+                    interactionInProgress == true else { return }
                 
-                // Animate the complete strike...
+                // Animate the strike...
                 if shouldCompleteStrike {
-                    strikeView.frame.size.width = strikeCompleteWidth
+                    strikeView!.frame.size.width = strikeCompleteWidth!
                     
-                    guard let tableViewCell = tableViewCell as? ItemTableViewCell else { return }
+                    if let tableViewCell = tableViewCell as? ItemTableViewCell {
+                        tableViewCell.strikeCompleteDelegate?.completeItem(tableViewCell: tableViewCell)
+                    }
                     
-                    tableViewCell.strikeCompleteDelegate?.completeItem(tableViewCell: tableViewCell)
+                    shouldCompleteStrike = false
                 } else {
-                    strikeView.frame.size.width = strikeStandardWidth
-            }
+                    strikeView!.frame.size.width = strikeStandardWidth
+                }
+            
+                cellIndex = nil
+                tableViewCell = nil
+                strikeView = nil
+                strikeCompleteWidth = nil
+                interactionInProgress = false
         }
     }
 }

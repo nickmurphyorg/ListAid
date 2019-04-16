@@ -45,7 +45,7 @@ class ListsViewController: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(reorderLists(notification:)), name: reorderListsNotificationName, object: nil)
         
-        dragReorderInteractionController = DragReorderInteractionController.init(uiView: listCollectionView, notificationCenterName: reorderListsNotificationName, reorderAxis: ReorderAxis.x, sections: [0])
+        dragReorderInteractionController = DragReorderInteractionController.init(viewController: self, uiView: listCollectionView, notificationCenterName: reorderListsNotificationName, reorderAxis: ReorderAxis.x, sections: [0])
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle{

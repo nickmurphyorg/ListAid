@@ -18,6 +18,7 @@ class ListViewController: UIViewController {
     var editListDelegate: EditListDelegate?
     var zoomInteractionController: ZoomInteractionController?
     var dragReorderInteractionController: DragReorderInteractionController?
+    var strikeInteractionController: StrikeInteractionController?
     
     var selectedList: List!
     var selectedListItems = [Item]()
@@ -39,7 +40,8 @@ class ListViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(moveItem(notification:)), name: reorderItemsNotificationName, object: nil)
         
         zoomInteractionController = ZoomInteractionController(viewController: self, tableView: itemsTableView)
-        dragReorderInteractionController = DragReorderInteractionController(uiView: itemsTableView, notificationCenterName: reorderItemsNotificationName, reorderAxis: ReorderAxis.y, sections: [0])
+        dragReorderInteractionController = DragReorderInteractionController(viewController: self, uiView: itemsTableView, notificationCenterName: reorderItemsNotificationName, reorderAxis: ReorderAxis.y, sections: [0])
+        strikeInteractionController = StrikeInteractionController(viewController: self, tableView: itemsTableView)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -70,7 +72,7 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
         
         cell.itemNameLabel.text = itemData.name
         
-        let completeStrikeWidth = cell.itemNameLabel.intrinsicContentSize.width + 28
+        let completeStrikeWidth = cell.itemNameLabel.intrinsicContentSize.width + listStyleMetrics.strikeCompleteMargin
         
         if itemData.completed {
             cell.strikeThroughWidthConstraint.constant = completeStrikeWidth
@@ -79,7 +81,6 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         cell.strikeCompleteDelegate = self
-        cell.strikeInteractionController = StrikeInteractionController.init(tableCell: cell, strikeStandardWidth: listStyleMetrics.strikeWidth, strikeCompleteWidth: completeStrikeWidth)
         
         return cell
     }
@@ -130,11 +131,26 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
 // MARK: - Gesture Delegate
 extension ListViewController: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        // Prevent pull down to close when reordering items.
-        if dragReorderInteractionController?.interactionInProgress ?? false {
-            return false
+        return true
+    }
+
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if let gesture = gestureRecognizer as? UIPanGestureRecognizer {
+            let translation = gesture.translation(in: itemsTableView)
+
+            // Prevent completing item when editing item
+            if translation.x > 0 && translation.x > translation.y {
+                if itemsTableView.isEditing {
+                    return false
+                }
+            }
+            
+            // Prevent Pull Down When Reordering Items
+            if dragReorderInteractionController?.interactionInProgress ?? false {
+                return false
+            }
         }
-        
+
         return true
     }
 }

@@ -11,16 +11,17 @@ import UIKit
 
 class DragReorderInteractionController {
     var interactionInProgress = false
-    
     private var startingIndex: IndexPath?
     private var snapShot: UIView?
+    private weak var viewController: UIViewController!
+    private weak var uiView: UIView!
     
-    let uiView: UIView!
     let notificationCenterName: NSNotification.Name!
     let reorderAxis: ReorderAxis!
     let sections: [Int]!
     
-    init(uiView: UIView, notificationCenterName: NSNotification.Name, reorderAxis: ReorderAxis, sections: [Int]) {
+    init(viewController: UIViewController, uiView: UIView, notificationCenterName: NSNotification.Name, reorderAxis: ReorderAxis, sections: [Int]) {
+        self.viewController = viewController
         self.uiView = uiView
         self.notificationCenterName = notificationCenterName
         self.reorderAxis = reorderAxis
@@ -31,6 +32,7 @@ class DragReorderInteractionController {
     
     private func addGesture(tableView: UIView) {
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(dragCellView(gestureRecognizer:)))
+        longPressGesture.delegate = viewController as? UIGestureRecognizerDelegate
         
         self.uiView.addGestureRecognizer(longPressGesture)
     }
