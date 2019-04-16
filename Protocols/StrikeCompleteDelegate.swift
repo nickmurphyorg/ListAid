@@ -9,6 +9,6 @@
 import Foundation
 import UIKit
 
-protocol StrikeCompleteDelegate {
+protocol StrikeCompleteDelegate: class where Self: UIViewController {
     func completeItem(tableViewCell: UITableViewCell)
 }

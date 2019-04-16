@@ -15,7 +15,7 @@ class ItemTableViewCell: UITableViewCell {
     
     let listStyleMetrics = ListStyleMetric()
     
-    var strikeCompleteDelegate: StrikeCompleteDelegate?
+    weak var strikeCompleteDelegate: StrikeCompleteDelegate?
     var strikeInteractionController: StrikeInteractionController?
     
     override func awakeFromNib() {
