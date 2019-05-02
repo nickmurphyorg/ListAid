@@ -16,7 +16,7 @@ class ModelController {
     private let listObject = "ListObject"
     private let itemObject = "ItemObject"
     private let listNameKey = "name"
-    private let saveQueue = DispatchQueue(label: "org.nickmurphy.ListAid.saveQueue", qos: .background)
+    private let saveQueue = DispatchQueue(label: "org.nickmurphy.ListAid.saveQueue", qos: .default)
     
     private var managedContext: NSManagedObjectContext? = nil
     
@@ -395,7 +395,15 @@ class ModelController {
 extension ModelController {
     func sortItemsByIndex(_ items: [Item]) -> [Item] {
         let sortedItems = items.sorted { (firstItem, secondItem) -> Bool in
-            guard firstItem.index != nil && secondItem.index != nil else { return false }
+            guard firstItem.index != nil && secondItem.index != nil else {
+                if firstItem.index != nil && secondItem.index == nil {
+                    return true
+                } else if firstItem.index == nil && secondItem.index != nil {
+                    return false
+                }
+                
+                return false
+            }
             
             return firstItem.index! < secondItem.index!
         }
@@ -409,14 +417,10 @@ extension ModelController {
         let itemToUpdate = managedContext?.object(with: itemID) as! ItemObject
         itemToUpdate.index = Int16(index)
         
-        saveQueue.async { [weak self] in
-            guard let weakSelf = self else { return }
-            
-            do {
-                try weakSelf.managedContext?.save()
-            } catch let error as NSError {
-                print("There was a problem updating the item's index: \(error)")
-            }
+        do {
+            try managedContext?.save()
+        } catch let error as NSError {
+            print("There was a problem updating the item's index: \(error)")
         }
     }
 }

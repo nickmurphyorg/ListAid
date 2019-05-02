@@ -89,7 +89,7 @@ extension AddItemsViewController: UISearchBarDelegate {
             }
             
         } else if searchResultItems.count == 0 && editingItemAtIndex != nil {
-            updatedList = ModelController.shared.renameItem(editingItemAtIndex!, in: updatedList!, to: searchBar.text!)
+            updatedList = ModelController.shared.renameItem(editingItemAtIndex!, in: selectedListItems, to: searchBar.text!)
             
             editingItemAtIndex = nil
             

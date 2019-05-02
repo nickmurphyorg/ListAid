@@ -186,19 +186,22 @@ class ModelControllerTests: XCTestCase {
     }
     
     func testReorderItemInList() {
+        testItemList = ModelController.shared.addItemToList(listId: testListId, itemName: "Last One")
+        
         for item in testItemList {
             ModelController.shared.toggleListStatus(itemID: item.id)
         }
         
         var listItems = ModelController.shared.returnFilteredItemsInList(listId: testListId)
         
-        guard listItems.count > 1 else {
+        guard listItems.count > 2 else {
             XCTFail("Not enough items to test reorder.")
             
             return
         }
         
         listItems = ModelController.shared.reorder(items: listItems, 0, 1)
+        listItems = ModelController.shared.reorder(items: listItems, 1, 2)
         
         let updatedListItems = ModelController.shared.returnFilteredItemsInList(listId: testListId)
         

@@ -365,13 +365,16 @@
 				TargetAttributes = {
 					D1E7B3362161534300C11416 = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1020;
 					};
 					D1E7B34D2161534600C11416 = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1020;
 						TestTargetID = D1E7B3362161534300C11416;
 					};
 					D1E7B3582161534600C11416 = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1020;
 						TestTargetID = D1E7B3362161534300C11416;
 					};
 				};
@@ -643,7 +646,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.nickmurphy.Listaid;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -661,7 +664,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.nickmurphy.Listaid;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -681,7 +684,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.nickmurphy.ListaidTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Listaid.app/Listaid";
 			};
@@ -702,7 +705,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.nickmurphy.ListaidTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Listaid.app/Listaid";
 			};
@@ -722,7 +725,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.nickmurphy.ListaidUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = Listaid;
 			};
@@ -742,7 +745,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.nickmurphy.ListaidUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = Listaid;
 			};
