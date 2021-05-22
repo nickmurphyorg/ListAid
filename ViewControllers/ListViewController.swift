@@ -10,10 +10,11 @@ import UIKit
 
 class ListViewController: UIViewController {
     
-    @IBOutlet weak var listNameLabel: UILabel!
-    @IBOutlet weak var addItemsButton: UIButton!
-    @IBOutlet weak var listBackground: UIView!
-    @IBOutlet weak var itemsTableView: UITableView!
+    var listNameTextField: UITextField!
+    var textFieldUnderline: CALayer!
+    var actionButton: UIButton!
+    var listBackground: UIView!
+    var itemsTableView: UITableView!
     
     var editListDelegate: EditListDelegate?
     var zoomInteractionController: ZoomInteractionController?
@@ -21,46 +22,176 @@ class ListViewController: UIViewController {
     var strikeInteractionController: StrikeInteractionController?
     
     var selectedList: List!
-    var selectedListItems = [Item]()
     
+    private var listMode: ListMode = .Presented
+    private var deleteList: DeleteListDelegate?
     private let cellIdentifier = "ItemCell"
     private let addItemsSegue = "PresentAddItems"
     private let reorderItemsNotificationName = NSNotification.Name("reorderItems")
     private let listStyleMetrics = ListStyleMetric()
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    init(list: List, mode: ListMode) {
+        super.init(nibName: nil, bundle: nil)
         
-        selectedListItems = selectedList.items
-        listNameLabel.text = selectedList.name
+        selectedList = list
+        listMode = mode
         
-        listBackground.layer.cornerRadius = listStyleMetrics.cornerRadius
-        itemsTableView.bounces = false
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(moveItem(notification:)), name: reorderItemsNotificationName, object: nil)
+        setupViews()
         
         zoomInteractionController = ZoomInteractionController(viewController: self, tableView: itemsTableView)
         dragReorderInteractionController = DragReorderInteractionController(viewController: self, uiView: itemsTableView, notificationCenterName: reorderItemsNotificationName, reorderAxis: ReorderAxis.y, sections: [0])
         strikeInteractionController = StrikeInteractionController(viewController: self, tableView: itemsTableView)
     }
     
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(moveItem(notification:)), name: reorderItemsNotificationName, object: nil)
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         // Verify User Is Closing List
         guard zoomInteractionController?.interactionInProgress ?? false else { return }
         
-        editListDelegate?.editList(listItems: selectedListItems)
+        editListDelegate?.editList(listItems: selectedList.items)
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle{
         return .lightContent
     }
+}
+
+//MARK: - Setup Views
+extension ListViewController {
+    private func setupViews() {
+        listNameTextField = UITextField()
+        listNameTextField.translatesAutoresizingMaskIntoConstraints = false
+        listNameTextField.text = "Test" // selectedList.name
+        listNameTextField.borderStyle = .none
+        listNameTextField.font = UIFont.systemFont(ofSize: 34, weight: .bold)
+        listNameTextField.textColor = .white
+        listNameTextField.layer.shadowColor = CGColor(gray: 0.5, alpha: 1.0)
+        listNameTextField.layer.shadowOffset = CGSize(width: listNameTextField.frame.width, height: 1)
+        listNameTextField.layer.shadowOpacity = 0
+        view.addSubview(listNameTextField)
+        
+        textFieldUnderline = listNameTextField.createUnderline(color: UIColor.red)
+        listNameTextField.layer.addSublayer(textFieldUnderline)
+        
+        actionButton = UIButton()
+        actionButton.translatesAutoresizingMaskIntoConstraints = false
+        actionButton.setBackgroundImage(UIImage(named: "AddItems"), for: .normal)
+        actionButton.addTarget(self, action: #selector(actionButtonAction(sender:)), for: .touchUpInside)
+        view.addSubview(actionButton)
+        
+        listBackground = UIView()
+        listBackground.translatesAutoresizingMaskIntoConstraints = false
+        listBackground.backgroundColor = .white
+        listBackground.clipsToBounds = true
+        listBackground.layer.cornerRadius = listStyleMetrics.cornerRadius
+        view.addSubview(listBackground)
+        
+        itemsTableView = UITableView()
+        itemsTableView.translatesAutoresizingMaskIntoConstraints = false
+        itemsTableView.dataSource = self
+        itemsTableView.delegate = self
+        itemsTableView.separatorStyle = .none
+        itemsTableView.rowHeight = 44
+        itemsTableView.bounces = false
+        itemsTableView.register(ItemTableViewCell.self, forCellReuseIdentifier: cellIdentifier)
+        listBackground.addSubview(itemsTableView)
+        
+        setupConstraints()
+    }
     
+    private func setupConstraints() {
+        NSLayoutConstraint.activate([
+            listNameTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 10 + listStyleMetrics.statusBarHeight),
+            actionButton.leftAnchor.constraint(equalTo: listNameTextField.rightAnchor, constant: 12),
+            listNameTextField.heightAnchor.constraint(equalToConstant: 35),
+            listNameTextField.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 12)
+        ])
+        
+        NSLayoutConstraint.activate([
+            actionButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 13 + listStyleMetrics.statusBarHeight),
+            view.rightAnchor.constraint(equalTo: actionButton.rightAnchor, constant: 10),
+            actionButton.heightAnchor.constraint(equalToConstant: 30),
+            actionButton.widthAnchor.constraint(equalToConstant: 30)
+        ])
+        
+        NSLayoutConstraint.activate([
+            listBackground.topAnchor.constraint(equalTo: listNameTextField.bottomAnchor, constant: 10),
+            listBackground.rightAnchor.constraint(equalTo: view.rightAnchor),
+            listBackground.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            listBackground.leftAnchor.constraint(equalTo: view.leftAnchor)
+        ])
+        
+        NSLayoutConstraint.activate([
+            itemsTableView.topAnchor.constraint(equalTo: listBackground.topAnchor),
+            itemsTableView.rightAnchor.constraint(equalTo: listBackground.rightAnchor),
+            itemsTableView.bottomAnchor.constraint(equalTo: listBackground.bottomAnchor),
+            itemsTableView.leftAnchor.constraint(equalTo: listBackground.leftAnchor)
+        ])
+    }
+}
+
+//MARK: - List Modes
+extension ListViewController {
+    func setListMode(_ mode: ListMode) {
+        listMode = mode
+        
+        switch mode {
+        case .Edit:
+            view.isUserInteractionEnabled = true
+            itemsTableView.isUserInteractionEnabled = false
+            textFieldUnderline.isHidden = false
+            actionButton.isHidden = false
+            listNameTextField.isHidden = false
+            // underline
+            
+            actionButton.setBackgroundImage(UIImage(named: "DeleteList"), for: .normal)
+            actionButton.tintColor = UIColor(red: 1.0, green: 0.23, blue: 0.19, alpha: 1.0)
+        case .New:
+            view.isUserInteractionEnabled = true
+            itemsTableView.isUserInteractionEnabled = false
+            textFieldUnderline.isHidden = false
+            actionButton.isHidden = false
+            listNameTextField.isHidden = false
+            listNameTextField.becomeFirstResponder()
+            // underline
+            
+            actionButton.setBackgroundImage(UIImage(named: "DeleteList"), for: .normal)
+            actionButton.tintColor = UIColor(red: 1.0, green: 0.23, blue: 0.19, alpha: 1.0)
+        case .Cell:
+            view.isUserInteractionEnabled = false
+            textFieldUnderline.isHidden = true
+            actionButton.isHidden = true
+            listNameTextField.isHidden = false
+            // underline
+            
+        case .Presented:
+            view.isUserInteractionEnabled = true
+            itemsTableView.isUserInteractionEnabled = true
+            textFieldUnderline.isHidden = true
+            actionButton.isHidden = false
+            listNameTextField.isHidden = false
+        case .Selected:
+            view.isUserInteractionEnabled = false
+            textFieldUnderline.isHidden = true
+            actionButton.isHidden = true
+            listNameTextField.isHidden = true
+        }
+    }
 }
 
 //MARK: - Tableview Datasource and Delegate
 extension ListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return selectedListItems.count
+        return selectedList.items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -68,7 +199,7 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
             fatalError("Could not initalize a new Item Table View Cell.")
         }
         
-        let itemData = selectedListItems[indexPath.row]
+        let itemData = selectedList.items[indexPath.row]
         
         cell.itemNameLabel.text = itemData.name
         
@@ -91,9 +222,9 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
         let removeAction = UITableViewRowAction(style: .normal, title: "Remove", handler: { [weak self] (action:UITableViewRowAction, indexPath: IndexPath) -> Void in
             guard let weakSelf = self else { return }
             
-            ModelController.shared.toggleListStatus(itemID: weakSelf.selectedListItems[indexPath.row].id)
+            ModelController.shared.toggleListStatus(itemID: weakSelf.selectedList.items[indexPath.row].id)
             
-            weakSelf.selectedListItems.remove(at: indexPath.row)
+            weakSelf.selectedList.items.remove(at: indexPath.row)
             
             tableView.reloadData()
         })
@@ -111,12 +242,12 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
                 editingCell.strikeThrough.frame.size.width = weakSelf.listStyleMetrics.strikeWidth
             }
             
-            weakSelf.selectedListItems[indexPath.row].completed.toggle()
+            weakSelf.selectedList.items[indexPath.row].completed.toggle()
             
-            ModelController.shared.toggleCompletionStatus(itemID: weakSelf.selectedListItems[indexPath.row].id)
+            ModelController.shared.toggleCompletionStatus(itemID: weakSelf.selectedList.items[indexPath.row].id)
         })
         
-        if selectedListItems[indexPath.row].completed {
+        if selectedList.items[indexPath.row].completed {
             cellOptions.append(relistAction)
         }
         
@@ -125,6 +256,13 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
         return true
+    }
+}
+
+//MARK: - Delete List Delegate
+extension ListViewController {
+    func setDeleteListDelegate <L: DeleteListDelegate> (deleteListDelegate: L) {
+        deleteList = deleteListDelegate
     }
 }
 
@@ -160,9 +298,9 @@ extension ListViewController: StrikeCompleteDelegate {
     func completeItem(tableViewCell: UITableViewCell) {
         guard let cellPath = itemsTableView.indexPath(for: tableViewCell) else { return }
         
-        selectedListItems[cellPath.row].completed.toggle()
+        selectedList.items[cellPath.row].completed.toggle()
         
-        ModelController.shared.toggleCompletionStatus(itemID: selectedListItems[cellPath.row].id)
+        ModelController.shared.toggleCompletionStatus(itemID: selectedList.items[cellPath.row].id)
         
         itemsTableView.reloadRows(at: [cellPath], with: .automatic)
     }
@@ -171,9 +309,26 @@ extension ListViewController: StrikeCompleteDelegate {
 //MARK: - Edit List Delegate
 extension ListViewController: EditListItemsDelegate {
     func editItems(items: [Item]) {
-        selectedListItems = items
+        selectedList.items = items
         
         itemsTableView.reloadData()
+    }
+}
+
+//MARK: - Action Button
+extension ListViewController {
+    @objc func actionButtonAction(sender: UIButton!) {
+        switch listMode {
+        case .Edit:
+            deleteList?.deleteListContaining(sender)
+        default:
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let addItemsViewController = storyboard.instantiateViewController(withIdentifier: "addItemsViewController") as! AddItemsViewController
+            addItemsViewController.selectedListId = selectedList?.id
+            addItemsViewController.editListItemsDelegate = self
+            
+            self.present(addItemsViewController, animated: true, completion: nil)
+        }
     }
 }
 
@@ -187,7 +342,7 @@ extension ListViewController {
                 return
         }
         
-        selectedListItems = ModelController.shared.reorder(items: selectedListItems, fromIndex, toIndex)
+        selectedList.items = ModelController.shared.reorder(items: selectedList.items, fromIndex, toIndex)
     }
 }
 
@@ -195,25 +350,9 @@ extension ListViewController {
 extension ListViewController {
     override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         if motion == .motionShake {
-            selectedListItems = ModelController.shared.purgeCompleted(items: selectedListItems)
+            selectedList.items = ModelController.shared.purgeCompleted(items: selectedList.items)
             
             itemsTableView.reloadSections(IndexSet.init(integer: 0), with: .automatic)
-        }
-    }
-}
-
-//MARK: - Navigation
-extension ListViewController {
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        switch segue.identifier {
-        case addItemsSegue:
-            let destinationNavigationController = segue.destination as! UINavigationController
-            let destinationViewController = destinationNavigationController.viewControllers.first as! AddItemsViewController
-            destinationViewController.selectedListId = selectedList.id
-            destinationViewController.editListItemsDelegate = self
-
-        default:
-            return
         }
     }
 }

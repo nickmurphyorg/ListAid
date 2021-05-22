@@ -28,6 +28,7 @@
 		D1B08ACD22454EEC0053DFDD /* HasEdgeToEdgeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B08ACC22454EEC0053DFDD /* HasEdgeToEdgeScreen.swift */; };
 		D1B08ACF224561EA0053DFDD /* ListStyleMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B08ACE224561EA0053DFDD /* ListStyleMetrics.swift */; };
 		D1B9B721216AB4E20037B0D4 /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1B9B720216AB4E20037B0D4 /* ListViewController.swift */; };
+		D1DB13ED25A4092500F7410C /* ImageNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1DB13EC25A4092500F7410C /* ImageNames.swift */; };
 		D1E7B33B2161534300C11416 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E7B33A2161534300C11416 /* AppDelegate.swift */; };
 		D1E7B33D2161534300C11416 /* ListsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E7B33C2161534300C11416 /* ListsViewController.swift */; };
 		D1E7B3402161534300C11416 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D1E7B33E2161534300C11416 /* Main.storyboard */; };
@@ -44,6 +45,7 @@
 		D1E7B37B216155CF00C11416 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E7B37A216155CF00C11416 /* SettingsViewController.swift */; };
 		D1E7B37D2165979000C11416 /* NewListCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E7B37C2165979000C11416 /* NewListCollectionViewCell.swift */; };
 		D1EBC04E2173A6170050D784 /* AddItemsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1EBC04D2173A6170050D784 /* AddItemsViewController.swift */; };
+		D1FCB4B025DB144800C52D20 /* ListModes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1FCB4AF25DB144700C52D20 /* ListModes.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,6 +88,7 @@
 		D1B08ACC22454EEC0053DFDD /* HasEdgeToEdgeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HasEdgeToEdgeScreen.swift; sourceTree = "<group>"; };
 		D1B08ACE224561EA0053DFDD /* ListStyleMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListStyleMetrics.swift; sourceTree = "<group>"; };
 		D1B9B720216AB4E20037B0D4 /* ListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ListViewController.swift; path = ViewControllers/ListViewController.swift; sourceTree = SOURCE_ROOT; };
+		D1DB13EC25A4092500F7410C /* ImageNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageNames.swift; sourceTree = "<group>"; };
 		D1E7B3372161534300C11416 /* Listaid.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Listaid.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1E7B33A2161534300C11416 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D1E7B33C2161534300C11416 /* ListsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListsViewController.swift; sourceTree = "<group>"; };
@@ -108,6 +111,7 @@
 		D1E7B37A216155CF00C11416 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		D1E7B37C2165979000C11416 /* NewListCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NewListCollectionViewCell.swift; path = Cells/NewListCollectionViewCell.swift; sourceTree = SOURCE_ROOT; };
 		D1EBC04D2173A6170050D784 /* AddItemsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AddItemsViewController.swift; path = ViewControllers/AddItemsViewController.swift; sourceTree = SOURCE_ROOT; };
+		D1FCB4AF25DB144700C52D20 /* ListModes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListModes.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,7 +163,9 @@
 			isa = PBXGroup;
 			children = (
 				D123AD1B220F9D65006CB995 /* ReorderArrayNames.swift */,
+				D1DB13EC25A4092500F7410C /* ImageNames.swift */,
 				D123AD1D220FC0B6006CB995 /* ReorderAxis.swift */,
+				D1FCB4AF25DB144700C52D20 /* ListModes.swift */,
 			);
 			path = Enumerations;
 			sourceTree = "<group>";
@@ -360,7 +366,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1000;
-				LastUpgradeCheck = 1000;
+				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = "Nick Murphy";
 				TargetAttributes = {
 					D1E7B3362161534300C11416 = {
@@ -436,6 +442,7 @@
 				D15E3F5B21D13EF7008EF0EE /* AddItemTableViewCell.swift in Sources */,
 				D1EBC04E2173A6170050D784 /* AddItemsViewController.swift in Sources */,
 				D12E1E12221A601E0041E860 /* IndexOfView.swift in Sources */,
+				D1DB13ED25A4092500F7410C /* ImageNames.swift in Sources */,
 				D15E3F6121D3FDAE008EF0EE /* ItemTableViewCell.swift in Sources */,
 				D10FEDF721E2821A004B9E5A /* StrikeCompleteDelegate.swift in Sources */,
 				D123AD1C220F9D65006CB995 /* ReorderArrayNames.swift in Sources */,
@@ -446,6 +453,7 @@
 				D11B7F8C21976B42009F1A77 /* ZoomInteractionController.swift in Sources */,
 				D1E7B36D2161544500C11416 /* List.swift in Sources */,
 				D184E071217BD49A00F9726C /* EditListItemsDelegate.swift in Sources */,
+				D1FCB4B025DB144800C52D20 /* ListModes.swift in Sources */,
 				D15E3F5D21D14A07008EF0EE /* ToggleListedItemDelegate.swift in Sources */,
 				D1B9B721216AB4E20037B0D4 /* ListViewController.swift in Sources */,
 				D1E7B3792161556F00C11416 /* RoundedCorners.swift in Sources */,
@@ -543,6 +551,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -568,7 +577,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -604,6 +613,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -623,7 +633,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;

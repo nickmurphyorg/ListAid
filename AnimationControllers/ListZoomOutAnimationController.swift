@@ -12,22 +12,16 @@ class ListZoomOutAnimationController: NSObject, UIViewControllerAnimatedTransiti
     
     let zoomInteractionController: ZoomInteractionController?
     
+    private let listCellViewController: ListViewController
     private let listCellFrame: CGRect
-    private let listNameLabel: UITextField
-    private let addItemsButton: UIButton
     private let animationDuration = 0.5
-    private let listStyleMetrics = ListStyleMetric()
-    private let statusBarHeight: CGFloat!
     
-    init(listCellFrame: CGRect, listNameLabel: UITextField, addItemsButton: UIButton, intereactionController: ZoomInteractionController?) {
-        statusBarHeight = UIApplication.shared.statusBarFrame.height * listStyleMetrics.scaleFactor
+    init(listCellViewController: ListViewController, listCellFrame: CGRect, intereactionController: ZoomInteractionController?) {
+        let originFrame = CGRect(x: listCellFrame.minX, y: listCellFrame.minY, width: listCellFrame.width, height: listCellFrame.height)
         
-        let originFrame = CGRect(x: listCellFrame.minX, y: listCellFrame.minY, width: listCellFrame.width, height: listCellFrame.height + statusBarHeight)
-        
-        self.zoomInteractionController = intereactionController
+        self.listCellViewController = listCellViewController
         self.listCellFrame = originFrame
-        self.listNameLabel = listNameLabel
-        self.addItemsButton = addItemsButton
+        self.zoomInteractionController = intereactionController
     }
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
@@ -35,50 +29,40 @@ class ListZoomOutAnimationController: NSObject, UIViewControllerAnimatedTransiti
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        guard let originVC = transitionContext.viewController(forKey: .from),
-            let destinationVC = transitionContext.viewController(forKey: .to),
-            let addItemsButtonImage = addItemsButton.currentBackgroundImage
-            else {
-                return
-        }
+        guard let originVC = transitionContext.viewController(forKey: .from) as? ListViewController,
+              let originActionButton = originVC.actionButton else { return }
         
-        addItemsButton.isHidden = true
+        originActionButton.isHidden = true
         
         guard let snapShot = originVC.view.snapshotView(afterScreenUpdates: true) else { return }
         
-        // Create Sudo Add Items Button
-        let sudoAddItemsButton = UIImageView.init(frame: addItemsButton.frame)
-        sudoAddItemsButton.image = addItemsButtonImage
+        let sudoActionButton = UIImageView.init(frame: originActionButton.frame)
+        sudoActionButton.image = originActionButton.currentBackgroundImage
         
         let containerView = transitionContext.containerView
-        containerView.insertSubview(destinationVC.view, at: 0)
         containerView.addSubview(snapShot)
-        containerView.addSubview(sudoAddItemsButton)
+        containerView.addSubview(sudoActionButton)
+        
         originVC.view.isHidden = true
         
         let duration = transitionDuration(using: transitionContext)
         
         UIView.animateKeyframes(withDuration: duration, delay: 0, options: .calculationModeCubic, animations: {
             UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 1.0) {
-                sudoAddItemsButton.alpha = 0
-                snapShot.frame = self.listCellFrame.offsetBy(dx: 0, dy: -self.statusBarHeight)
+                snapShot.frame = self.listCellFrame.offsetBy(dx: 0, dy: 0)
+                sudoActionButton.alpha = 0
             }
-            UIView.addKeyframe(withRelativeStartTime: 1.0, relativeDuration: 0.0) {
-                self.listNameLabel.alpha = 1
-            }
-        }, completion: { _ in
-            originVC.view.isHidden = false
+        }, completion: { [weak self] _ in
+            guard let self = self else { return }
+            self.listCellViewController.setListMode(.Cell)
             snapShot.removeFromSuperview()
-            sudoAddItemsButton.removeFromSuperview()
+            sudoActionButton.removeFromSuperview()
             
             if transitionContext.transitionWasCancelled {
-                destinationVC.view.removeFromSuperview()
-                self.addItemsButton.isHidden = false
-                self.listNameLabel.alpha = 0
+                originActionButton.isHidden = false
             }
             
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         })
     }
-
 }

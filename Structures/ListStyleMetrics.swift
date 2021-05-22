@@ -16,4 +16,5 @@ struct ListStyleMetric {
     let strikeHeight: CGFloat = 3
     let strikeCornerRadius: CGFloat = 1.5
     let strikeCompleteMargin: CGFloat = 28
+    let statusBarHeight: CGFloat = UIApplication.shared.statusBarFrame.height
 }

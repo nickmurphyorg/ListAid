@@ -9,66 +9,40 @@
 import UIKit
 
 class ListCollectionViewCell: UICollectionViewCell {
+    private var viewControllerView: UIView?
     
-    @IBOutlet weak var listNameField: UITextField!
-    @IBOutlet weak var textFieldUnderline: UIView!
-    @IBOutlet weak var deleteListButton: UIButton!
-    @IBOutlet private weak var listTableView: UITableView!
-    
-    var deleteList: DeleteListDelegate?
-    
-    let screenDimensions = UIScreen.main.bounds
-    let statusBarHeight = UIApplication.shared.statusBarFrame.height
     let listStyleMetrics = ListStyleMetric()
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        viewControllerView?.removeFromSuperview()
+        viewControllerView = nil
+    }
+}
+
+//MARK: - Setup Cell
+extension ListCollectionViewCell {
+    func setViewControllerView(_ view: UIView) {
+        view.transform = CGAffineTransform.init(scaleX: listStyleMetrics.scaleFactor, y: listStyleMetrics.scaleFactor)
+        view.center = CGPoint(x: contentView.frame.width / 2, y: contentView.frame.height / 2)
+        viewControllerView = view
         
-        // Scale Cell Layers For Zoom Animation
-        self.contentView.frame.size.width = screenDimensions.width
-        self.contentView.frame.size.height = screenDimensions.height - statusBarHeight
-        self.contentView.transform = CGAffineTransform(scaleX: listStyleMetrics.scaleFactor, y: listStyleMetrics.scaleFactor)
-        
-        listTableView.translatesAutoresizingMaskIntoConstraints = false
-        listTableView.rowHeight = hasEdgeToEdgeScreen() ? 43.3333 : 43.6666
-        listTableView.layer.cornerRadius = listStyleMetrics.cornerRadius
-    }
-    
-    @IBAction func returnNameField(_ sender: UITextField) {
-        listNameField.resignFirstResponder()
-    }
-    
-    @IBAction func deleteListButton(_ sender: UIButton) {
-        deleteList?.deleteListContaining(sender)
+        contentView.addSubview(viewControllerView!)
     }
 }
 
-//MARK: - List Name Field Delegate
-extension ListCollectionViewCell {
-    func setNameFieldDelegate <T: UITextFieldDelegate> (textFieldDelegate: T) {
-        listNameField.delegate = textFieldDelegate
-    }
-}
-
-//MARK: - Delete List Delegate
-extension ListCollectionViewCell {
-    func setDeleteListDelegate <L: DeleteListDelegate> (deleteListDelegate: L) {
-        deleteList = deleteListDelegate
-    }
-}
-
-//MARK: - Tableview DataSource and Delegate
-extension ListCollectionViewCell {
-    func setTableViewDataSourceDelegate <D: UITableViewDataSource & UITableViewDelegate> (dataSourceDelegate: D) {
-        listTableView.dataSource = dataSourceDelegate
-        listTableView.delegate = dataSourceDelegate
-    }
-    
-    func setTableViewIndex(_ index: Int) {
-        listTableView.tag = index
-    }
-    
-    func reloadTable(){
-        listTableView.reloadData()
-    }
-}
+////MARK: - List Name Field Delegate
+//extension ListCollectionViewCell {
+//    func setNameFieldDelegate <T: UITextFieldDelegate> (textFieldDelegate: T) {
+////        listNameField.delegate = textFieldDelegate
+//    }
+//}
+//

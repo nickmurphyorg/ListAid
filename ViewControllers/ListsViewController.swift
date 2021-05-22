@@ -16,6 +16,7 @@ class ListsViewController: UIViewController {
     @IBOutlet weak var editButton: UIBarButtonItem!
     
     var lists = [List]()
+    var listViewControllers = [ListViewController]()
     var selectedListIndex = Int()
     var listWidth: CGFloat = 0
     var listHeight: CGFloat = 0
@@ -28,7 +29,6 @@ class ListsViewController: UIViewController {
     private let listCellIdentifier = "ListCell"
     private let newListCellIdentifier = "NewListCell"
     private let itemCellIdentifier = "ItemCell"
-    private let statusBarHeight = UIApplication.shared.statusBarFrame.height
     private let accentColor = UIColor(red: 0.0, green: 0.478, blue: 1.0, alpha: 1.0)
     private let reorderListsNotificationName = NSNotification.Name.init("reorderLists")
     private let listsSectionInsets = UIEdgeInsets(top: 0, left: 30, bottom: 0, right: 30)
@@ -39,10 +39,17 @@ class ListsViewController: UIViewController {
         super.viewDidLoad()
         
         lists = ModelController.shared.returnAllLists()
-        
+        listViewControllers = lists.map{
+            let list = ListViewController(list: $0, mode: .Cell)
+            list.setDeleteListDelegate(deleteListDelegate: self)
+            
+            return list
+        }
         listWidth = mainView.frame.width * listStyleMetrics.scaleFactor
-        listHeight = (mainView.frame.height * listStyleMetrics.scaleFactor) - statusBarHeight
+        listHeight = mainView.frame.height * listStyleMetrics.scaleFactor
         
+        listCollectionView.register(ListCollectionViewCell.self, forCellWithReuseIdentifier: listCellIdentifier)
+        listCollectionView.register(NewListCollectionViewCell.self, forCellWithReuseIdentifier: newListCellIdentifier)
         NotificationCenter.default.addObserver(self, selector: #selector(reorderLists(notification:)), name: reorderListsNotificationName, object: nil)
         
         dragReorderInteractionController = DragReorderInteractionController.init(viewController: self, uiView: listCollectionView, notificationCenterName: reorderListsNotificationName, reorderAxis: ReorderAxis.x, sections: [0])
@@ -77,36 +84,26 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
             fatalError("The list cell could not be created.")
         }
         
-        let list = lists[indexPath.item]
-        
-        cell.listNameField.text = list.name
-        cell.setTableViewIndex(indexPath.item)
-        cell.setNameFieldDelegate(textFieldDelegate: self)
-        cell.setDeleteListDelegate(deleteListDelegate: self)
-        cell.setTableViewDataSourceDelegate(dataSourceDelegate: self)
+        cell.setViewControllerView(listViewControllers[indexPath.item].view)
         
         return cell
     }
     
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let cell = cell as? ListCollectionViewCell else { return }
-        
+    private func setListModeForList(_ index: Int) {
         if editListsMode {
             // Editing Lists
-            cell.textFieldUnderline.isHidden = false
-            cell.deleteListButton.isHidden = false
-        } else if addListMode && indexPath.item + 1 == lists.count {
+            listViewControllers[index].setListMode(.Edit)
+        } else if addListMode && index + 1 == lists.count {
             // Adding New List
-            cell.textFieldUnderline.isHidden = false
-            cell.deleteListButton.isHidden = false
+            listViewControllers[index].setListMode(.New)
         } else {
             // Finished Editing Lists
-            cell.textFieldUnderline.isHidden = true
-            cell.deleteListButton.isHidden = true
+            listViewControllers[index].setListMode(.Cell)
         }
-        
-        cell.setTableViewIndex(indexPath.item)
-        cell.reloadTable()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        setListModeForList(indexPath.item)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -124,7 +121,12 @@ extension ListsViewController: UICollectionViewDelegate, UICollectionViewDataSou
         
         UserPreferences.shared.saveSelectedList(index: selectedListIndex)
         
-        performSegue(withIdentifier: listSegueIdentifier, sender: nil)
+        let destinationViewController = ListViewController(list: lists[selectedListIndex], mode: .Presented)
+        destinationViewController.editListDelegate = self
+        destinationViewController.transitioningDelegate = self
+        destinationViewController.modalPresentationStyle = .overCurrentContext
+        
+        self.navigationController?.present(destinationViewController, animated: true, completion: nil)
     }
     
     func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
@@ -161,23 +163,7 @@ extension ListsViewController {
         let visibleCellIndexPaths = listCollectionView.indexPathsForVisibleItems
         
         for indexPath in visibleCellIndexPaths {
-            guard let cell = listCollectionView.cellForItem(at: indexPath) as? ListCollectionViewCell else {
-                return
-            }
-            
-            if editListsMode {
-                // Editing Lists
-                cell.textFieldUnderline.isHidden = false
-                cell.deleteListButton.isHidden = false
-            } else if addListMode && indexPath.item + 1 == lists.count {
-                // Adding List
-                cell.textFieldUnderline.isHidden = false
-                cell.deleteListButton.isHidden = false
-            } else {
-                // Finished Editing Lists
-                cell.textFieldUnderline.isHidden = true
-                cell.deleteListButton.isHidden = true
-            }
+            setListModeForList(indexPath.item)
         }
     }
 }
@@ -232,53 +218,24 @@ extension ListsViewController: DeleteListDelegate {
             guard let weakSelf = self else { return }
             
             weakSelf.addListMode = false
-            
             weakSelf.lists = ModelController.shared.deleteList(listId: weakSelf.lists[index].id)
             
-            let itemIndex = IndexPath(item: index, section: 0)
-            
-            weakSelf.listCollectionView.deleteItems(at: [itemIndex])
+            weakSelf.listViewControllers.remove(at: index)
+            weakSelf.listCollectionView.deleteItems(at: [IndexPath(item: index, section: 0)])
         })
         
         present(deleteAlert, animated: true, completion: nil)
     }
 }
 
-//MARK: - Cell Table View Delegate and Datasource
-extension ListsViewController: UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return lists[tableView.tag].items.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: itemCellIdentifier, for: indexPath) as? ItemTableViewCell else {
-            fatalError("ListsViewController - Could not initalize an Item Small Tableview Cell.")
-        }
-
-        let item = lists[tableView.tag].items[indexPath.row]
-        
-        cell.itemNameLabel.text = item.name
-        
-        let completeStrikeWidth = cell.itemNameLabel.intrinsicContentSize.width + 28
-        
-        if item.completed {
-            cell.strikeThroughWidthConstraint.constant = completeStrikeWidth
-        } else {
-            cell.strikeThroughWidthConstraint.constant = listStyleMetrics.strikeWidth
-        }
-        
-        return cell
-    }
-}
-
 //MARK: - Edit List Delegate
 extension ListsViewController: EditListDelegate {
     func editList(listItems: [Item]) {
-        lists[selectedListIndex].items = listItems
+//        lists[selectedListIndex].items = listItems
         
-        guard let cellToReload = listCollectionView.cellForItem(at: IndexPath(item: selectedListIndex, section: 0)) as? ListCollectionViewCell else { return }
+//        guard let cellToReload = listCollectionView.cellForItem(at: IndexPath(item: selectedListIndex, section: 0)) as? ListCollectionViewCell else { return }
         
-        cellToReload.reloadTable()
+//        cellToReload.reloadTable()
     }
 }
 
@@ -302,35 +259,15 @@ extension ListsViewController {
         addListMode = true
         
         lists = ModelController.shared.addNewList()
+        listViewControllers.append(ListViewController(list: lists[lists.count - 1], mode: .New))
         
         let newIndex = IndexPath(item: lists.count - 1, section: 0)
         
         listCollectionView.insertItems(at: [newIndex])
         
-        let addedList = listCollectionView.cellForItem(at: newIndex) as! ListCollectionViewCell
-        addedList.setTableViewIndex(newIndex.item)
-        addedList.reloadTable()
-        addedList.listNameField.becomeFirstResponder()
-        addedList.listNameField.layer.shadowOpacity = 1.0
-        addedList.deleteListButton.isHidden = false
+//        addedList.listNameField.layer.shadowOpacity = 1.0
+//        addedList.deleteListButton.isHidden = false
     }
-}
-
-//MARK: - Navigation
-extension ListsViewController {
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        switch segue.identifier {
-        case listSegueIdentifier:
-            let destinationViewController = segue.destination as! ListViewController
-                destinationViewController.selectedList = lists[selectedListIndex]
-                destinationViewController.editListDelegate = self
-                destinationViewController.transitioningDelegate = self
-            
-        default:
-            return
-        }
-    }
-    
 }
 
 //MARK: - Navigation Transition Delegate
@@ -338,10 +275,8 @@ extension ListsViewController: UIViewControllerTransitioningDelegate {
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         let selectedListIndexPath = IndexPath(item: selectedListIndex, section: 0)
         
-        guard let destinationVC = presented as? ListViewController,
-            let addItemsButton = destinationVC.addItemsButton,
-            let selectedCell = listCollectionView.cellForItem(at: selectedListIndexPath) as? ListCollectionViewCell,
-            let listNameLabel = selectedCell.listNameField
+        guard let _ = presented as? ListViewController,
+            let selectedCell = listCollectionView.cellForItem(at: selectedListIndexPath) as? ListCollectionViewCell
             else {
                 return nil
         }
@@ -349,16 +284,14 @@ extension ListsViewController: UIViewControllerTransitioningDelegate {
         let cellFrame = selectedCell.frame
         let selectedCellFrame = listCollectionView.convert(cellFrame, to: listCollectionView.superview)
         
-        return ListZoomInAnimationController(listCellFrame: selectedCellFrame, listNameLabel: listNameLabel, addItemsButton: addItemsButton)
+        return ListZoomInAnimationController(listCellViewController: listViewControllers[selectedListIndex], listCellFrame: selectedCellFrame)
     }
     
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         let selectedListIndexPath = IndexPath(item: selectedListIndex, section: 0)
         
         guard let originVC = dismissed as? ListViewController,
-            let addItemsButton = originVC.addItemsButton,
-            let selectedCell = listCollectionView.cellForItem(at: selectedListIndexPath) as? ListCollectionViewCell,
-            let listNameLabel = selectedCell.listNameField
+            let selectedCell = listCollectionView.cellForItem(at: selectedListIndexPath) as? ListCollectionViewCell
             else {
                 return nil
         }
@@ -366,7 +299,7 @@ extension ListsViewController: UIViewControllerTransitioningDelegate {
         let cellFrame = selectedCell.frame
         let selectedCellFrame = listCollectionView.convert(cellFrame, to: listCollectionView.superview)
         
-        return ListZoomOutAnimationController(listCellFrame: selectedCellFrame, listNameLabel: listNameLabel, addItemsButton: addItemsButton, intereactionController: originVC.zoomInteractionController)
+        return ListZoomOutAnimationController(listCellViewController: listViewControllers[selectedListIndex], listCellFrame: selectedCellFrame, intereactionController: originVC.zoomInteractionController)
     }
     
     func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {

@@ -10,10 +10,10 @@ import UIKit
 
 extension UIView {
     
-    func createUnderlineFor(_ view: UIView, color: UIColor) -> CALayer {
+    func createUnderline(color: UIColor) -> CALayer {
         let underline = CALayer()
         underline.backgroundColor = color.cgColor
-        underline.frame = CGRect(x: 0, y: view.frame.height, width: view.frame.width, height: 1)
+        underline.frame = CGRect(x: 0, y: self.frame.height, width: self.frame.width, height: 1)
         
         return underline
     }
